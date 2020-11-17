@@ -36,6 +36,8 @@ import (
 	"github.com/ethereum/go-ethereum/trie"
 	"github.com/syndtr/goleveldb/leveldb/util"
 	"gopkg.in/urfave/cli.v1"
+	// stage1-substate: import research
+	"github.com/ethereum/go-ethereum/research"
 )
 
 var (
@@ -119,6 +121,21 @@ Remove blockchain and state databases`,
 The arguments are interpreted as block numbers or hashes.
 Use "ethereum dump 0" to dump the genesis block.`,
 	}
+	// stage1-substate: export-substate command
+	exportSubstateCommand = cli.Command{
+		Action:    utils.MigrateFlags(exportSubstate),
+		Name:      "export-substate",
+		Usage:     "Export transaction substates of blocks into JSON files",
+		ArgsUsage: "<dirname> <blockNumFirst> <blockNumLast>",
+		Flags:     []cli.Flag{},
+		Category:  "BLOCKCHAIN COMMANDS",
+		Description: `
+ Requires three arguments: <dirpath> <blockNumFirst> <blockNumLast>
+ <dirpath> is the path of the directory to save substates.
+ <blockNumFirst> and <blockNumLast> are the first and
+ last block of the inclusive range of blocks to dump substates.
+ Exported JSON files can be used as input of 'evm' binary`,
+	}
 )
 
 // initGenesis will initialise the given JSON format genesis file and writes it as
@@ -156,6 +173,10 @@ func initGenesis(ctx *cli.Context) error {
 }
 
 func importChain(ctx *cli.Context) error {
+
+	research.OpenSubstateDB()
+	defer research.CloseSubstateDB()
+
 	if len(ctx.Args()) < 1 {
 		utils.Fatalf("This command requires an argument.")
 	}
@@ -321,6 +342,37 @@ func dump(ctx *cli.Context) error {
 	}
 	chainDb.Close()
 	return nil
+}
+
+// stage1-substate: func exportSubstate for export-substate command
+func exportSubstate(ctx *cli.Context) error {
+	if len(ctx.Args()) != 3 {
+		utils.Fatalf("stage1-substate: export-substate command requires exactly 3 arguments.")
+	}
+
+	start := time.Now()
+
+	var err error
+	dirpath := ctx.Args().First()
+	first, ferr := strconv.ParseInt(ctx.Args().Get(1), 10, 64)
+	last, lerr := strconv.ParseInt(ctx.Args().Get(2), 10, 64)
+	if ferr != nil || lerr != nil {
+		utils.Fatalf("stage1-substate: exportSubstate: error in parsing parameters: block number not an integer")
+	}
+	if first < 0 || last < 0 {
+		utils.Fatalf("stage1-substate: exportSubstate: error: block number must be greater than 0")
+	}
+
+	research.OpenSubstateDBReadOnly()
+	err = research.ExportSubstate(dirpath, uint64(first), uint64(last))
+	research.CloseSubstateDB()
+
+	if err != nil {
+		utils.Fatalf("stage1-substate: exportSubstate: error: %v", err)
+	}
+	fmt.Printf("stage1-substate: exportSubstate done in %v", time.Since(start))
+
+	return err
 }
 
 // hashish returns true for strings that look like hashes.

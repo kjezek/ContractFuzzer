@@ -165,6 +165,8 @@ func init() {
 		licenseCommand,
 		// See config.go
 		dumpConfigCommand,
+		// stage1-substate: export-substate command
+		exportSubstateCommand,
 	}
 	sort.Sort(cli.CommandsByName(app.Commands))
 

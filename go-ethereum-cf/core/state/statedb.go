@@ -29,6 +29,9 @@ import (
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/ethereum/go-ethereum/trie"
+
+	// stage1-substate: import research
+	"github.com/ethereum/go-ethereum/research"
 )
 
 type revision struct {
@@ -74,6 +77,11 @@ type StateDB struct {
 	nextRevisionId int
 
 	lock sync.Mutex
+
+	// stage1-substate: ResearchPreAlloc, ResearchPostAlloc, ResearchBlockHashes of StateDB
+	ResearchPreAlloc    research.SubstateAlloc
+	ResearchPostAlloc   research.SubstateAlloc
+	ResearchBlockHashes map[uint64]common.Hash
 }
 
 // Create a new state from a given trie
@@ -82,7 +90,7 @@ func New(root common.Hash, db Database) (*StateDB, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &StateDB{
+	sdb := &StateDB{
 		db:                     db,
 		trie:                   tr,
 		stateObjects:           make(map[common.Address]*stateObject),
@@ -91,7 +99,14 @@ func New(root common.Hash, db Database) (*StateDB, error) {
 		refund:                 new(big.Int),
 		logs:                   make(map[common.Hash][]*types.Log),
 		preimages:              make(map[common.Hash][]byte),
-	}, nil
+	}
+
+	// stage1-substate: init StateDB.Research*
+	sdb.ResearchPreAlloc = make(research.SubstateAlloc)
+	sdb.ResearchPostAlloc = make(research.SubstateAlloc)
+	sdb.ResearchBlockHashes = make(map[uint64]common.Hash)
+
+	return sdb, nil
 }
 
 // setError remembers the first non-nil error it is called with.
@@ -123,6 +138,12 @@ func (self *StateDB) Reset(root common.Hash) error {
 	self.logSize = 0
 	self.preimages = make(map[common.Hash][]byte)
 	self.clearJournalAndRefund()
+
+	// stage1-substate: reset StateDB.Research*
+	self.ResearchPreAlloc = make(research.SubstateAlloc)
+	self.ResearchPostAlloc = make(research.SubstateAlloc)
+	self.ResearchBlockHashes = make(map[uint64]common.Hash)
+
 	return nil
 }
 
@@ -354,8 +375,21 @@ func (self *StateDB) getStateObject(addr common.Address) (stateObject *stateObje
 	// Prefer 'live' objects.
 	if obj := self.stateObjects[addr]; obj != nil {
 		if obj.deleted {
+
+			// stage1-substate: insert empty account in StateDB.ResearchPreAlloc
+			// This will prevent insertion of new account created in txs
+			if _, exist := self.ResearchPreAlloc[addr]; !exist {
+				self.ResearchPreAlloc[addr] = nil
+			}
+
 			return nil
 		}
+
+		// stage1-substate: insert the account in StateDB.ResearchPreAlloc
+		if _, exist := self.ResearchPreAlloc[addr]; !exist {
+			self.ResearchPreAlloc[addr] = research.NewSubstateAccount(obj.Nonce(), obj.Balance(), obj.Code(self.db))
+		}
+
 		return obj
 	}
 
@@ -481,6 +515,22 @@ func (self *StateDB) Copy() *StateDB {
 	for hash, preimage := range self.preimages {
 		state.preimages[hash] = preimage
 	}
+
+	// stage1-substate: copy StateDB.Research*
+	state.ResearchPreAlloc = make(research.SubstateAlloc)
+	state.ResearchPostAlloc = make(research.SubstateAlloc)
+	state.ResearchBlockHashes = make(map[uint64]common.Hash)
+	for addr, account := range self.ResearchPreAlloc {
+		state.ResearchPreAlloc[addr] = account.Copy()
+	}
+	for addr, account := range self.ResearchPostAlloc {
+		state.ResearchPostAlloc[addr] = account.Copy()
+	}
+	for num64, bhash := range self.ResearchBlockHashes {
+		state.ResearchBlockHashes[num64] = bhash
+	}
+
+
 	return state
 }
 
@@ -552,6 +602,14 @@ func (self *StateDB) Prepare(thash, bhash common.Hash, ti int) {
 	self.thash = thash
 	self.bhash = bhash
 	self.txIndex = ti
+
+	// stage1-substate: reset StateDB.Research* and stateObject.Research*
+	self.ResearchPreAlloc = make(research.SubstateAlloc)
+	self.ResearchPostAlloc = make(research.SubstateAlloc)
+	self.ResearchBlockHashes = make(map[uint64]common.Hash)
+	for _, obj := range self.stateObjects {
+		obj.ResearchTouched = make(map[common.Hash]struct{})
+	}
 }
 
 // Finalise finalises the state by removing the self destructed objects
@@ -561,9 +619,42 @@ func (self *StateDB) Prepare(thash, bhash common.Hash, ti int) {
 // Please note that Finalise is used by EIP#98 and is used instead of
 // IntermediateRoot.
 func (s *StateDB) Finalise() {
+
+	// stage1-substate: copy original storage values to Prestate and Poststate
+	for addr, sa := range s.ResearchPreAlloc {
+		if sa == nil {
+			delete(s.ResearchPreAlloc, addr)
+			continue
+		}
+
+		obj := s.stateObjects[addr]
+		for key := range obj.ResearchTouched {
+			sa.Storage[key] = obj.GetState(s.db, key)
+		}
+		s.ResearchPostAlloc[addr] = sa.Copy()
+	}
+
 	for addr := range s.stateObjectsDestructed {
 		s.deleteStateObject(s.stateObjects[addr])
+
+		// stage1-substate: delete account from StateDB.ResearchPostAlloc
+		delete(s.ResearchPostAlloc, addr)
 	}
+
+	for addr := range s.ResearchPostAlloc {
+		// stage1-substate: copy dirty account to StateDB.ResearchPostAlloc
+		obj := s.stateObjects[addr]
+		if obj == nil {
+			delete(s.ResearchPostAlloc, addr)
+		} else {
+			sa := research.NewSubstateAccount(obj.Nonce(), obj.Balance(), obj.Code(s.db))
+			for key := range obj.ResearchTouched {
+				sa.Storage[key] = obj.GetState(s.db, key)
+			}
+			s.ResearchPostAlloc[addr] = sa
+		}
+	}
+
 	s.clearJournalAndRefund()
 }
 

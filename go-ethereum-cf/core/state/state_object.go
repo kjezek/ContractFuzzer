@@ -89,6 +89,10 @@ type stateObject struct {
 	touched   bool
 	deleted   bool
 	onDirty   func(addr common.Address) // Callback method to mark a state object newly dirty
+
+
+	// stage1-substate: stateObject.ResearchTouched
+	ResearchTouched map[common.Hash]struct{}
 }
 
 // empty returns whether the account is considered empty.
@@ -121,6 +125,8 @@ func newObject(db *StateDB, address common.Address, data Account, onDirty func(a
 		cachedStorage: make(Storage),
 		dirtyStorage:  make(Storage),
 		onDirty:       onDirty,
+		// stage1-substate: init stateObject.ResearchTouched
+		ResearchTouched: make(map[common.Hash]struct{}),
 	}
 }
 
@@ -171,6 +177,11 @@ func (c *stateObject) getTrie(db Database) Trie {
 
 // GetState returns a value in account storage.
 func (self *stateObject) GetState(db Database, key common.Hash) common.Hash {
+	// stage1-substate: mark keys touched by GetState
+	if _, exist := self.ResearchTouched[key]; !exist {
+		self.ResearchTouched[key] = struct{}{}
+	}
+
 	value, exists := self.cachedStorage[key]
 	if exists {
 		return value
@@ -212,6 +223,14 @@ func (self *stateObject) setState(key, value common.Hash) {
 		self.onDirty(self.Address())
 		self.onDirty = nil
 	}
+}
+
+// finalise moves all dirty storage slots into the pending area to be hashed or
+// committed later. It is invoked at the end of every transaction.
+func (s *stateObject) finalise() {
+
+	// stage1-substate: clear stateObject.ResearchTouched
+	s.ResearchTouched = make(map[common.Hash]struct{})
 }
 
 // updateTrie writes cached storage modifications into the object's storage trie.
@@ -304,6 +323,14 @@ func (self *stateObject) deepCopy(db *StateDB, onDirty func(addr common.Address)
 	stateObject.suicided = self.suicided
 	stateObject.dirtyCode = self.dirtyCode
 	stateObject.deleted = self.deleted
+
+	// stage1-substate: deepCopy stateObject.ResearchTouched
+	stateObject.ResearchTouched = make(map[common.Hash]struct{})
+	for key := range self.ResearchTouched {
+		stateObject.ResearchTouched[key] = struct{}{}
+	}
+
+
 	return stateObject
 }
 
