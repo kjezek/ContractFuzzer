@@ -14,10 +14,10 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/research"
 	cli "gopkg.in/urfave/cli.v1"
@@ -85,14 +85,15 @@ func ApplySubstate(ctx *cli.Context, block uint64, tx int, substate *research.Su
 	}
 
 	// Apply Message
+	memdb, _ := ethdb.NewMemDatabase()
 	var (
-		statedb   = t8ntool.MakePreState(rawdb.NewMemoryDatabase(), pre.Pre)
+		statedb   = t8ntool.MakePreState(memdb, pre.Pre)
 		gaspool   = new(core.GasPool)
 		blockHash = common.Hash{0x13, 0x37}
 		txIndex   = tx
 	)
 
-	gaspool.AddGas(pre.Env.GasLimit)
+	gaspool.AddGas(new(big.Int).SetUint64(pre.Env.GasLimit))
 	vmContext := vm.Context{
 		CanTransfer: core.CanTransfer,
 		Transfer:    core.Transfer,
@@ -100,7 +101,7 @@ func ApplySubstate(ctx *cli.Context, block uint64, tx int, substate *research.Su
 		BlockNumber: new(big.Int).SetUint64(pre.Env.Number),
 		Time:        new(big.Int).SetUint64(pre.Env.Timestamp),
 		Difficulty:  pre.Env.Difficulty,
-		GasLimit:    pre.Env.GasLimit,
+		GasLimit:    new(big.Int).SetUint64(pre.Env.GasLimit),
 		GetHash:     getHash,
 		// GasPrice and Origin needs to be set per transaction
 	}
@@ -119,7 +120,7 @@ func ApplySubstate(ctx *cli.Context, block uint64, tx int, substate *research.Su
 
 	evm := vm.NewEVM(vmContext, statedb, chainConfig, vmConfig)
 	snapshot := statedb.Snapshot()
-	msgResult, err := core.ApplyMessage(evm, msg, gaspool)
+	_, usedGas, err := core.ApplyMessage(evm, msg, gaspool)
 
 	if err != nil {
 		statedb.RevertToSnapshot(snapshot)
@@ -130,24 +131,22 @@ func ApplySubstate(ctx *cli.Context, block uint64, tx int, substate *research.Su
 		return t8ntool.NewError(t8ntool.ErrorMissingBlockhash, hashError)
 	}
 
-	if chainConfig.IsByzantium(vmContext.BlockNumber) {
-		statedb.Finalise(true)
-	} else {
-		statedb.IntermediateRoot(chainConfig.IsEIP158(vmContext.BlockNumber))
-	}
+	statedb.Finalise()
 
 	evmResult := &research.SubstateResult{}
-	if msgResult.Failed() {
-		evmResult.Status = types.ReceiptStatusFailed
+	if err != nil {
+		// evmResult.Status = types.ReceiptStatusFailed
+		evmResult.Status = 0
 	} else {
-		evmResult.Status = types.ReceiptStatusSuccessful
+		// evmResult.Status = types.ReceiptStatusSuccessful
+		evmResult.Status = 1
 	}
 	evmResult.Logs = statedb.GetLogs(common.Hash{})
 	evmResult.Bloom = types.BytesToBloom(types.LogsBloom(evmResult.Logs).Bytes())
 	if to := msg.To(); to == nil {
 		evmResult.ContractAddress = crypto.CreateAddress(evm.Context.Origin, msg.Nonce())
 	}
-	evmResult.GasUsed = msgResult.UsedGas
+	evmResult.GasUsed = usedGas.Uint64()
 
 	evmAlloc := statedb.ResearchPostAlloc
 
