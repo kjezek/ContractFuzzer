@@ -118,12 +118,12 @@ func ApplySubstate(ctx *cli.Context, block uint64, tx int, substate *research.Su
 
 	if err != nil {
 		statedb.RevertToSnapshot(snapshot)
-		return err
+		// return err
 	}
 
-	if hashError != nil {
-		return t8ntool.NewError(t8ntool.ErrorMissingBlockhash, hashError)
-	}
+	// if hashError != nil {
+	// 	return t8ntool.NewError(t8ntool.ErrorMissingBlockhash, hashError)
+	// }
 
 	statedb.Finalise()
 
