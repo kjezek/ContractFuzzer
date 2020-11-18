@@ -182,7 +182,7 @@ func (in *Interpreter) Run(snapshot int, contract *Contract, input []byte) (ret 
 			in.cfg.Tracer.CaptureState(in.evm, pc, op, contract.Gas, cost, mem, stack, contract, in.evm.depth, err)
 		}
 		//Hacker_record: wrap evm opcode operation, and record information that we care in our test.
-		res,err := Hacker_record(op,(opFunc)(operation.execute),&pc, in.evm, contract, mem, stack)
+		res, err := Hacker_record(op, (opFunc)(operation.execute), &pc, in.evm, contract, mem, stack)
 		// execute the operation
 		//res, err := operation.execute(&pc, in.evm, contract, mem, stack)
 		// verifyPool is a build flag. Pool verification makes sure the integrity

@@ -17,25 +17,19 @@
 package main
 
 import (
-	
 	"encoding/json"
 	"fmt"
-	
-	
+
 	"os"
 	goruntime "runtime"
-	
+
 	"testing"
 	"time"
 
 	"github.com/ethereum/go-ethereum/cmd/utils"
-	
+
 	"github.com/ethereum/go-ethereum/core"
-	
-	
-	
-	
-	
+
 	cli "gopkg.in/urfave/cli.v1"
 )
 

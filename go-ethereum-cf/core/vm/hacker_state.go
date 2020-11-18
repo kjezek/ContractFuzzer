@@ -1,7 +1,7 @@
 /**@hacker_state.go
 * 1  Record snapshot of contract state after reach any keypoint
 *       (such as operation Call,DelegateCall to be initiated);
-*/
+ */
 package vm
 
 import (
@@ -10,6 +10,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 )
+
 func StorageToString(storage map[common.Hash]common.Hash) string {
 	var Data string
 	Data = "{"
@@ -31,6 +32,7 @@ func getBalance(_addr common.Address) big.Int {
 	balance := hacker_env.StateDB.GetBalance(_addr)
 	return *balance
 }
+
 type Hacker_ContractState struct {
 	addr    common.Address
 	storage map[common.Hash]common.Hash
@@ -50,32 +52,33 @@ func (state *Hacker_ContractState) String() string {
 		state.balance.Text(10),
 		StorageToString(state.storage))
 }
-func (state *Hacker_ContractState) Cmp(other *Hacker_ContractState) (int,string){
-   s1 := state.storage
-   s2 := other.storage
-   if i :=state.balance.Cmp(&other.balance);i !=0{
-   	    return i,fmt.Sprintf("Balance Delta: %s",new(big.Int).Sub(&state.balance,&other.balance).Text(16))
-   }
-   for key,_ := range  s1{
-   	 if s1[key].Big().Cmp(s2[key].Big()) != 0{
-   	 	i := s1[key].Big().Cmp(s2[key].Big())
-  	 	str := fmt.Sprintf("Value Delta: %s",new(big.Int).Sub(s1[key].Big(),s2[key].Big()).Text(16))
-   	 	return i,str
-     }
-   }
-   return 0,fmt.Sprintf("Same")
+func (state *Hacker_ContractState) Cmp(other *Hacker_ContractState) (int, string) {
+	s1 := state.storage
+	s2 := other.storage
+	if i := state.balance.Cmp(&other.balance); i != 0 {
+		return i, fmt.Sprintf("Balance Delta: %s", new(big.Int).Sub(&state.balance, &other.balance).Text(16))
+	}
+	for key, _ := range s1 {
+		if s1[key].Big().Cmp(s2[key].Big()) != 0 {
+			i := s1[key].Big().Cmp(s2[key].Big())
+			str := fmt.Sprintf("Value Delta: %s", new(big.Int).Sub(s1[key].Big(), s2[key].Big()).Text(16))
+			return i, str
+		}
+	}
+	return 0, fmt.Sprintf("Same")
 }
 
 type HackerState struct {
 	contracts []*Hacker_ContractState
 }
-func (state *HackerState) Cmp(other *HackerState)(int,string){
-	for index,_:= range state.contracts{
-		if i,str := state.contracts[index].Cmp(other.contracts[index]);i!=0{
-			return i,str
+
+func (state *HackerState) Cmp(other *HackerState) (int, string) {
+	for index, _ := range state.contracts {
+		if i, str := state.contracts[index].Cmp(other.contracts[index]); i != 0 {
+			return i, str
 		}
-  }
-  return 0,fmt.Sprintf("Same")
+	}
+	return 0, fmt.Sprintf("Same")
 }
 func (state *HackerState) String() string {
 	len := len(state.contracts)
@@ -93,7 +96,7 @@ func (state *HackerState) String() string {
 }
 func newHackerState(addrs ...common.Address) *HackerState {
 	size := len(addrs)
-	_contracts := make([]*Hacker_ContractState, 0,size)
+	_contracts := make([]*Hacker_ContractState, 0, size)
 	for _, addr := range addrs {
 		_contracts = append(_contracts, newHacker_ContractState(addr))
 	}
@@ -103,14 +106,15 @@ func newHackerState(addrs ...common.Address) *HackerState {
 type HackerStateStack struct {
 	data []*HackerState
 }
-func (stack *HackerStateStack) Cmp(other *HackerStateStack)(int,string){
-	fmt.Printf("storage record stack size between initState and lastState <%d,%d>",stack.len(),other.len())
+
+func (stack *HackerStateStack) Cmp(other *HackerStateStack) (int, string) {
+	fmt.Printf("storage record stack size between initState and lastState <%d,%d>", stack.len(), other.len())
 	start := 0
-	last := other.len()-1
-	if i,str := stack.data[start].Cmp(other.data[last]);i!=0{
-			return i,str
+	last := other.len() - 1
+	if i, str := stack.data[start].Cmp(other.data[last]); i != 0 {
+		return i, str
 	}
-	return 0,fmt.Sprintf("Same")
+	return 0, fmt.Sprintf("Same")
 }
 func (stack *HackerStateStack) String() string {
 	len := stack.len()

@@ -5,7 +5,7 @@
 *   3.close call
 *   4.hacker_close
 *  These operation happens in function Call,CallCode,DelegateCall.
- */
+*/
 
 // Copyright 2014 The go-ethereum Authors
 // This file is part of the go-ethereum library.
@@ -26,15 +26,15 @@
 package vm
 
 import (
-	"math/big"
-	"sync/atomic"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/params"
-	"runtime"
 	"log"
+	"math/big"
+	"runtime"
 	"strings"
+	"sync/atomic"
 )
 
 var Println = log.Println
@@ -141,13 +141,13 @@ func (evm *EVM) Cancel() {
 // necessary value transfer required and takes the necessary steps to create accounts and reverses the state in
 // case of an execution error or failed value transfer.
 func (evm *EVM) Call(caller ContractRef, addr common.Address, input []byte, gas uint64, value *big.Int) (ret []byte, leftOverGas uint64, err error) {
-	if(caller == nil){
+	if caller == nil {
 		fmt.Println("caller is nil")
 	}
 	defer func() { // 必须要先声明defer，否则不能捕获到panic异常
 		if err := recover(); err != nil {
 			Println("error happened in Evm.Call")
-			Printf("%v",err) // 这里的err其实就是panic传入的内容
+			Printf("%v", err) // 这里的err其实就是panic传入的内容
 			for i := 0; i < 10; i++ {
 				funcName, file, line, ok := runtime.Caller(i)
 				if ok {
@@ -188,9 +188,8 @@ func (evm *EVM) Call(caller ContractRef, addr common.Address, input []byte, gas 
 	// only.
 	contract := NewContract(caller, to, value, gas)
 	contract.SetCallCode(&addr, evm.StateDB.GetCodeHash(addr), evm.StateDB.GetCode(addr))
-	
-	
-	if caller != nil&&!isRelOracle(contract.Address()) {
+
+	if caller != nil && !isRelOracle(contract.Address()) {
 		/***
 		*record Call action.And create HackerContractCall object
 		*then push the object to the stack.
@@ -207,12 +206,12 @@ func (evm *EVM) Call(caller ContractRef, addr common.Address, input []byte, gas 
 		}
 		nextCall := call.OnCall(caller, contract.Address(), *value, *new(big.Int).SetUint64(gas), input)
 		nextCall.snapshotId = snapshot
-		if nextCall== nil{
+		if nextCall == nil {
 			Println("nextcall is nil")
 			return
 		}
 		hacker_call_stack.push(nextCall)
-		Printf("\npush call@%p into stack",nextCall)
+		Printf("\npush call@%p into stack", nextCall)
 	}
 
 	ret, err = run(evm, snapshot, contract, input)
@@ -226,7 +225,7 @@ func (evm *EVM) Call(caller ContractRef, addr common.Address, input []byte, gas 
 		nextRevisionId = snapshot
 	}
 
-	if caller != nil&&!isRelOracle(contract.Address()) {
+	if caller != nil && !isRelOracle(contract.Address()) {
 		Println("\nclose call...")
 		/**
 		*Call action finish. So pop the object on top of the stack.
@@ -235,9 +234,9 @@ func (evm *EVM) Call(caller ContractRef, addr common.Address, input []byte, gas 
 		if hacker_call_stack != nil {
 			call := hacker_call_stack.pop()
 			call.nextRevisionId = nextRevisionId
-			if err!=nil{
+			if err != nil {
 				call.throwException = true
-				if strings.EqualFold(ErrOutOfGas.Error(),err.Error()){
+				if strings.EqualFold(ErrOutOfGas.Error(), err.Error()) {
 					call.errOutGas = true
 				}
 			}
@@ -246,7 +245,7 @@ func (evm *EVM) Call(caller ContractRef, addr common.Address, input []byte, gas 
 				return
 			}
 			call.OnCloseCall(*new(big.Int).SetUint64(contract.Gas))
-			if hacker_call_stack.len()== 1{
+			if hacker_call_stack.len() == 1 {
 				hacker_close()
 			}
 		}
@@ -281,8 +280,8 @@ func (evm *EVM) CallCode(caller ContractRef, addr common.Address, input []byte, 
 	}
 
 	var (
-		snapshot = evm.StateDB.Snapshot()
-		to       = AccountRef(caller.Address())
+		snapshot       = evm.StateDB.Snapshot()
+		to             = AccountRef(caller.Address())
 		nextRevisionId = snapshot
 	)
 	// initialise a new contract and set the code that is to be used by the
@@ -290,8 +289,8 @@ func (evm *EVM) CallCode(caller ContractRef, addr common.Address, input []byte, 
 	// only.
 	contract := NewContract(caller, to, value, gas)
 	contract.SetCallCode(&addr, evm.StateDB.GetCodeHash(addr), evm.StateDB.GetCode(addr))
-	
-	if caller != nil&&!isRelOracle(contract.Address()) {
+
+	if caller != nil && !isRelOracle(contract.Address()) {
 		/***
 		*record CallCode action.And create HackerContractCall object
 		*then push the object to the stack.
@@ -309,12 +308,12 @@ func (evm *EVM) CallCode(caller ContractRef, addr common.Address, input []byte, 
 		nextCall := call.OnCallCode(caller, contract.Address(), *value, *new(big.Int).SetUint64(gas), input)
 		nextCall.snapshotId = snapshot
 		//nextCall.nextRevisionId = evm.StateDB.GetNextRevisonId()
-		if nextCall== nil{
+		if nextCall == nil {
 			Println("nextcall is nil")
 			return
 		}
 		hacker_call_stack.push(nextCall)
-		Printf("\npush call@%p into stack",nextCall)
+		Printf("\npush call@%p into stack", nextCall)
 		/***/
 	}
 
@@ -323,7 +322,7 @@ func (evm *EVM) CallCode(caller ContractRef, addr common.Address, input []byte, 
 		contract.UseGas(contract.Gas)
 		evm.StateDB.RevertToSnapshot(snapshot)
 	}
-	if caller != nil&&!isRelOracle(contract.Address()) {
+	if caller != nil && !isRelOracle(contract.Address()) {
 		Println("\nclose call...")
 		// subcriber.Close()
 		// subcriber.Write()
@@ -334,7 +333,7 @@ func (evm *EVM) CallCode(caller ContractRef, addr common.Address, input []byte, 
 		if hacker_call_stack != nil {
 			call := hacker_call_stack.pop()
 			call.nextRevisionId = nextRevisionId
-			if err!=nil{
+			if err != nil {
 				call.throwException = true
 			}
 			if call == nil {
@@ -342,7 +341,7 @@ func (evm *EVM) CallCode(caller ContractRef, addr common.Address, input []byte, 
 				return
 			}
 			call.OnCloseCall(*new(big.Int).SetUint64(contract.Gas))
-			if hacker_call_stack.len()== 1{
+			if hacker_call_stack.len() == 1 {
 				hacker_close()
 			}
 		}
@@ -362,7 +361,7 @@ func (evm *EVM) DelegateCall(caller ContractRef, addr common.Address, input []by
 			Println(err) // 这里的err其实就是panic传入的内容，55
 		}
 	}()
-	
+
 	if evm.vmConfig.NoRecursion && evm.depth > 0 {
 		return nil, gas, nil
 	}
@@ -374,16 +373,16 @@ func (evm *EVM) DelegateCall(caller ContractRef, addr common.Address, input []by
 	}
 
 	var (
-		snapshot = evm.StateDB.Snapshot()
-		to       = AccountRef(caller.Address())
+		snapshot       = evm.StateDB.Snapshot()
+		to             = AccountRef(caller.Address())
 		nextRevisionId = snapshot
 	)
 
 	// Iinitialise a new contract and make initialise the delegate values
 	contract := NewContract(caller, to, nil, gas).AsDelegate()
 	contract.SetCallCode(&addr, evm.StateDB.GetCodeHash(addr), evm.StateDB.GetCode(addr))
-	
-	if caller != nil&&!isRelOracle(contract.Address()) {
+
+	if caller != nil && !isRelOracle(contract.Address()) {
 		/***
 		*record DelegateCall action.And create HackerContractCall object
 		*then push the object to the stack.
@@ -398,22 +397,22 @@ func (evm *EVM) DelegateCall(caller ContractRef, addr common.Address, input []by
 			Println("call is nil")
 			return
 		}
-		nextCall := call.OnDelegateCall(caller, contract.Address(),  *new(big.Int).SetUint64(gas), input)
+		nextCall := call.OnDelegateCall(caller, contract.Address(), *new(big.Int).SetUint64(gas), input)
 		nextCall.snapshotId = snapshot
 		//nextCall.nextRevisionId = evm.StateDB.GetNextRevisonId()
-		if nextCall== nil{
+		if nextCall == nil {
 			Println("nextcall is nil")
 			return
 		}
 		hacker_call_stack.push(nextCall)
-		Printf("\npush call@%p into stack",nextCall)
+		Printf("\npush call@%p into stack", nextCall)
 	}
 	ret, err = run(evm, snapshot, contract, input)
 	if err != nil {
 		contract.UseGas(contract.Gas)
 		evm.StateDB.RevertToSnapshot(snapshot)
 	}
-	if caller != nil&&!isRelOracle(contract.Address()) {
+	if caller != nil && !isRelOracle(contract.Address()) {
 		Println("\nclose call...")
 		// subcriber.Close()
 		// subcriber.Write()
@@ -437,7 +436,7 @@ func (evm *EVM) DelegateCall(caller ContractRef, addr common.Address, input []by
 			}
 		}
 	}
-	
+
 	return ret, contract.Gas, err
 }
 

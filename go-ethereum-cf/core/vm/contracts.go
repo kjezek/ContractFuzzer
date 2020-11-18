@@ -19,11 +19,11 @@ package vm
 import (
 	"crypto/sha256"
 	"errors"
-	"math/big"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/params"
 	"golang.org/x/crypto/ripemd160"
+	"math/big"
 )
 
 var errBadPrecompileInput = errors.New("bad pre compile input")

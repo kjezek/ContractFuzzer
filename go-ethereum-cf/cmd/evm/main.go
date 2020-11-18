@@ -160,8 +160,7 @@ last block of the inclusive range of blocks to replay transactions.`,
 }
 
 func init() {
-	app.Flags = []cli.Flag{
-	}
+	app.Flags = []cli.Flag{}
 	app.Commands = []cli.Command{
 		// stage1-substate: transition-substate (t8n-substate) command
 		stateTransitionSubstateCommand,

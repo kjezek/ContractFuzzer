@@ -2,7 +2,7 @@
 *@ hacker_operation.go
 * 1 store some vital operations which recorded in file @instruction.go
 * 2 key unit:operation_stack
-*/
+ */
 package vm
 
 import (

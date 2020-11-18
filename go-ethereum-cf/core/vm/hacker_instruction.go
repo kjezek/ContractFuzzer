@@ -1,12 +1,14 @@
 package vm
+
 /**
-   hacker_instruction.go, list the instruction opXXX which will be recorded and analyzed later
- */
- type opFunc func(pc *uint64, evm *EVM, contract *Contract, memory *Memory, stack *Stack) ([]byte, error)
- func Hacker_record(op OpCode,fun opFunc,pc *uint64, evm *EVM, contract *Contract, memory *Memory, stack *Stack) ([]byte, error){
- 	if hacker_call_stack!=nil {
- 		call := hacker_call_stack.peek()
- 		if call!=nil {
+  hacker_instruction.go, list the instruction opXXX which will be recorded and analyzed later
+*/
+type opFunc func(pc *uint64, evm *EVM, contract *Contract, memory *Memory, stack *Stack) ([]byte, error)
+
+func Hacker_record(op OpCode, fun opFunc, pc *uint64, evm *EVM, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
+	if hacker_call_stack != nil {
+		call := hacker_call_stack.peek()
+		if call != nil {
 			switch op {
 			case DIV:
 				call.OnDiv()
@@ -81,5 +83,5 @@ package vm
 			}
 		}
 	}
-	return fun(pc, evm, contract, memory , stack)
- }
+	return fun(pc, evm, contract, memory, stack)
+}

@@ -90,7 +90,6 @@ type stateObject struct {
 	deleted   bool
 	onDirty   func(addr common.Address) // Callback method to mark a state object newly dirty
 
-
 	// stage1-substate: stateObject.ResearchTouched
 	ResearchTouched map[common.Hash]struct{}
 }
@@ -329,7 +328,6 @@ func (self *stateObject) deepCopy(db *StateDB, onDirty func(addr common.Address)
 	for key := range self.ResearchTouched {
 		stateObject.ResearchTouched[key] = struct{}{}
 	}
-
 
 	return stateObject
 }

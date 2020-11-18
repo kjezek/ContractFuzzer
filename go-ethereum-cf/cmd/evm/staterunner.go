@@ -17,16 +17,9 @@
 package main
 
 import (
-	
-	
 	"fmt"
-	
-	
 
 	"github.com/ethereum/go-ethereum/core/state"
-	
-	
-	
 
 	cli "gopkg.in/urfave/cli.v1"
 )

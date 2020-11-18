@@ -530,7 +530,6 @@ func (self *StateDB) Copy() *StateDB {
 		state.ResearchBlockHashes[num64] = bhash
 	}
 
-
 	return state
 }
 
@@ -546,7 +545,7 @@ func (self *StateDB) Snapshot() int {
   2017-11.3 added by liuye
 */
 //Return nextRevisionId
-func (self *StateDB) GetNextRevisionId() int{
+func (self *StateDB) GetNextRevisionId() int {
 	return self.nextRevisionId
 }
 
