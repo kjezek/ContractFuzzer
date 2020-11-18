@@ -396,16 +396,36 @@ func (self *StateDB) getStateObject(addr common.Address) (stateObject *stateObje
 	// Load the object from the database.
 	enc, err := self.trie.TryGet(addr[:])
 	if len(enc) == 0 {
+
+		// stage1-substate: insert empty account in StateDB.ResearchPreAlloc
+		// This will prevent insertion of new account created in txs
+		if _, exist := self.ResearchPreAlloc[addr]; !exist {
+			self.ResearchPreAlloc[addr] = nil
+		}
+
 		self.setError(err)
 		return nil
 	}
 	var data Account
 	if err := rlp.DecodeBytes(enc, &data); err != nil {
+
+		// stage1-substate: insert empty account in StateDB.ResearchPreAlloc
+		// This will prevent insertion of new account created in txs
+		if _, exist := self.ResearchPreAlloc[addr]; !exist {
+			self.ResearchPreAlloc[addr] = nil
+		}
+
 		log.Error("Failed to decode state object", "addr", addr, "err", err)
 		return nil
 	}
 	// Insert into the live set.
 	obj := newObject(self, addr, data, self.MarkStateObjectDirty)
+
+	// stage1-substate: insert the account in StateDB.ResearchPreAlloc
+	if _, exist := self.ResearchPreAlloc[addr]; !exist {
+		self.ResearchPreAlloc[addr] = research.NewSubstateAccount(obj.Nonce(), obj.Balance(), obj.Code(self.db))
+	}
+
 	self.setStateObject(obj)
 	return obj
 }
@@ -621,6 +641,8 @@ func (s *StateDB) Finalise() {
 
 	// stage1-substate: copy original storage values to Prestate and Poststate
 	for addr, sa := range s.ResearchPreAlloc {
+		s.ResearchPostAlloc[addr] = nil
+
 		if sa == nil {
 			delete(s.ResearchPreAlloc, addr)
 			continue
@@ -645,13 +667,13 @@ func (s *StateDB) Finalise() {
 		obj := s.stateObjects[addr]
 		if obj == nil {
 			delete(s.ResearchPostAlloc, addr)
-		} else {
-			sa := research.NewSubstateAccount(obj.Nonce(), obj.Balance(), obj.Code(s.db))
-			for key := range obj.ResearchTouched {
-				sa.Storage[key] = obj.GetState(s.db, key)
-			}
-			s.ResearchPostAlloc[addr] = sa
+			continue
 		}
+		sa := research.NewSubstateAccount(obj.Nonce(), obj.Balance(), obj.Code(s.db))
+		for key := range obj.ResearchTouched {
+			sa.Storage[key] = obj.GetState(s.db, key)
+		}
+		s.ResearchPostAlloc[addr] = sa
 	}
 
 	s.clearJournalAndRefund()

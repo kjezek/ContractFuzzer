@@ -1,7 +1,6 @@
 package research
 
 import (
-	"encoding/json"
 	"fmt"
 	"math/big"
 	"runtime"
@@ -14,9 +13,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
-	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/research"
@@ -28,9 +25,6 @@ func ApplySubstate(ctx *cli.Context, block uint64, tx int, substate *research.Su
 	inputAlloc := substate.InputAlloc
 	inputEnv := substate.Env
 	inputMessage := substate.Message
-
-	outputAlloc := substate.OutputAlloc
-	outputResult := substate.Result
 
 	var (
 		vmConfig    vm.Config
@@ -120,7 +114,7 @@ func ApplySubstate(ctx *cli.Context, block uint64, tx int, substate *research.Su
 
 	evm := vm.NewEVM(vmContext, statedb, chainConfig, vmConfig)
 	snapshot := statedb.Snapshot()
-	_, usedGas, err := core.ApplyMessage(evm, msg, gaspool)
+	_, _, err = core.ApplyMessage(evm, msg, gaspool)
 
 	if err != nil {
 		statedb.RevertToSnapshot(snapshot)
@@ -132,49 +126,6 @@ func ApplySubstate(ctx *cli.Context, block uint64, tx int, substate *research.Su
 	}
 
 	statedb.Finalise()
-
-	evmResult := &research.SubstateResult{}
-	if err != nil {
-		// evmResult.Status = types.ReceiptStatusFailed
-		evmResult.Status = 0
-	} else {
-		// evmResult.Status = types.ReceiptStatusSuccessful
-		evmResult.Status = 1
-	}
-	evmResult.Logs = statedb.GetLogs(common.Hash{})
-	evmResult.Bloom = types.BytesToBloom(types.LogsBloom(evmResult.Logs).Bytes())
-	if to := msg.To(); to == nil {
-		evmResult.ContractAddress = crypto.CreateAddress(evm.Context.Origin, msg.Nonce())
-	}
-	evmResult.GasUsed = usedGas.Uint64()
-
-	evmAlloc := statedb.ResearchPostAlloc
-
-	if r, a := outputResult.Equal(evmResult), outputAlloc.Equal(evmAlloc); !(r && a) {
-		fmt.Printf("%v_%v\n", block, tx)
-		if !r {
-			fmt.Printf("inconsistent output: result\n")
-		}
-		if !a {
-			fmt.Printf("inconsistent output: alloc\n")
-		}
-		var jbytes []byte
-		jbytes, _ = json.MarshalIndent(inputAlloc, "", " ")
-		fmt.Printf("inputAlloc:\n%s\n", jbytes)
-		jbytes, _ = json.MarshalIndent(inputEnv, "", " ")
-		fmt.Printf("inputEnv:\n%s\n", jbytes)
-		jbytes, _ = json.MarshalIndent(inputMessage, "", " ")
-		fmt.Printf("inputMessage:\n%s\n", jbytes)
-		jbytes, _ = json.MarshalIndent(outputAlloc, "", " ")
-		fmt.Printf("outputAlloc:\n%s\n", jbytes)
-		jbytes, _ = json.MarshalIndent(evmAlloc, "", " ")
-		fmt.Printf("evmAlloc:\n%s\n", jbytes)
-		jbytes, _ = json.MarshalIndent(outputResult, "", " ")
-		fmt.Printf("outputResult:\n%s\n", jbytes)
-		jbytes, _ = json.MarshalIndent(evmResult, "", " ")
-		fmt.Printf("evmResult:\n%s\n", jbytes)
-		return fmt.Errorf("inconsistent output")
-	}
 
 	return nil
 }

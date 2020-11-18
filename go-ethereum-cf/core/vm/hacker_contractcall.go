@@ -12,7 +12,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/ethereum/go-ethereum/common"
 	"io"
 	"log"
 	"math/big"
@@ -21,6 +20,8 @@ import (
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 var hacker_env *EVM
@@ -488,15 +489,6 @@ func hacker_close() {
 		// to FuzzerReporter outside, whose listening port is on "http://localhost:8888/hack"
 		features_str, _ := json.Marshal(features)
 		values := url.Values{"oracles": {string(features_str)}, "profile": {GetReportor().Profile(hacker_call_hashs, hacker_calls)}}
-		url := "http://localhost:8888/hack?" + values.Encode()
-		if req, err := http.NewRequest("GET", url, nil); err != nil {
-			log.Println("Error Occured. %+v", err)
-		} else {
-			if response, err := Client.Do(req); err != nil {
-				log.Println("Error sending request to API endpoint. %+v", err)
-			} else {
-				defer response.Body.Close()
-			}
-		}
+		log.Println(values)
 	}
 }
