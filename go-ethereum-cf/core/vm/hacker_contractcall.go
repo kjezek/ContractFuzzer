@@ -487,8 +487,17 @@ func hacker_close() {
 
 		// Send the oracle and profile reports from one transaction or one contract call more precisely.
 		// to FuzzerReporter outside, whose listening port is on "http://localhost:8888/hack"
-		features_str, _ := json.Marshal(features)
-		values := url.Values{"oracles": {string(features_str)}, "profile": {GetReportor().Profile(hacker_call_hashs, hacker_calls)}}
-		log.Println(values)
+		features_str,_:= json.Marshal(features)
+		values := url.Values{"oracles":{string(features_str)},"profile":{GetReportor().Profile(hacker_call_hashs,hacker_calls)}}
+		url := "http://localhost:8888/hack?"+values.Encode()
+		if req, err := http.NewRequest("GET", url,nil);err!= nil {
+			log.Println("Error Occured. %+v", err)
+		}else{
+			if response,err := Client.Do(req);err!=nil{
+				log.Println("Error sending request to API endpoint. %+v", err)
+			}else{
+				defer response.Body.Close()
+			}
+		}
 	}
 }

@@ -4,8 +4,7 @@
     <list default="true" id="f09aaee9-87c5-499f-8b30-bccef2eebaa7" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../go-ethereum-cf/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../go-ethereum-cf/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../go-ethereum-cf/core/state/statedb.go" beforeDir="false" afterPath="$PROJECT_DIR$/../go-ethereum-cf/core/state/statedb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../go-ethereum-cf/core/state_processor.go" beforeDir="false" afterPath="$PROJECT_DIR$/../go-ethereum-cf/core/state_processor.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../go-ethereum-cf/core/vm/hacker_contractcall.go" beforeDir="false" afterPath="$PROJECT_DIR$/../go-ethereum-cf/core/vm/hacker_contractcall.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,13 +73,13 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$USER_HOME$/go-ethereum" />
     <property name="DefaultGoTemplateProperty" value="Go File" />
-    <property name="settings.editor.selected.configurable" value="com.goide.configuration.GoLibrariesConfigurableProvider" />
-    <property name="configurable.Global.GOPATH.is.expanded" value="true" />
-    <property name="configurable.Project.GOPATH.is.expanded" value="true" />
-    <property name="configurable.Module.GOPATH.is.expanded" value="false" />
     <property name="SearchEverywhereHistoryKey" value="strToType&#9;null&#9;null&#10;strToT&#9;null&#9;null&#10;fuz&#9;null&#9;null" />
+    <property name="configurable.Global.GOPATH.is.expanded" value="true" />
+    <property name="configurable.Module.GOPATH.is.expanded" value="false" />
+    <property name="configurable.Project.GOPATH.is.expanded" value="true" />
+    <property name="last_opened_file_path" value="$USER_HOME$/go-ethereum" />
+    <property name="settings.editor.selected.configurable" value="com.goide.configuration.GoLibrariesConfigurableProvider" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">

@@ -4,8 +4,7 @@
     <list default="true" id="ac22df9c-1d2d-4134-8cee-367178be75d4" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/../contract_fuzzer/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../contract_fuzzer/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/state/statedb.go" beforeDir="false" afterPath="$PROJECT_DIR$/core/state/statedb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/state_processor.go" beforeDir="false" afterPath="$PROJECT_DIR$/core/state_processor.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/vm/hacker_contractcall.go" beforeDir="false" afterPath="$PROJECT_DIR$/core/vm/hacker_contractcall.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -109,11 +108,11 @@
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
     <state x="640" y="175" width="639" height="729" key="find.popup/1920.0.1440.900/0.0.1920.1080@0.0.1920.1080" timestamp="1605506528665" />
-    <state x="469" y="201" width="670" height="564" key="search.everywhere.popup" timestamp="1605855474600">
+    <state x="469" y="201" width="670" height="564" key="search.everywhere.popup" timestamp="1605858962965">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="469" y="201" width="670" height="564" key="search.everywhere.popup/-960.0.960.704/0.0.1440.900@0.0.1440.900" timestamp="1605853749432" />
-    <state x="469" y="201" width="670" height="564" key="search.everywhere.popup/0.0.1440.900@0.0.1440.900" timestamp="1605855474600" />
+    <state x="469" y="201" width="670" height="564" key="search.everywhere.popup/0.0.1440.900@0.0.1440.900" timestamp="1605858962965" />
     <state x="625" y="241" width="670" height="676" key="search.everywhere.popup/1920.0.1440.900/0.0.1920.1080@0.0.1920.1080" timestamp="1605505312513" />
   </component>
 </project>
