@@ -188,7 +188,7 @@ func ContractFuzzer(ctx *cli.Context) error {
 			if err != nil {
 				return fmt.Errorf("failed to parse blockTx data: %s", blockTx)
 			}
-			tx, err := strconv.ParseInt(blockTxSplit[0], 10, 64)
+			tx, err := strconv.ParseInt(blockTxSplit[1], 10, 64)
 			if err != nil {
 				return fmt.Errorf("failed to parse blockTx data: %s", blockTx)
 			}
