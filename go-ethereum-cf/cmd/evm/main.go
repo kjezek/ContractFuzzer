@@ -159,6 +159,22 @@ two arguments: <blockNumFirst> <blockNumLast>
 last block of the inclusive range of blocks to replay transactions.`,
 }
 
+// stage1-substate-migration: contract-fuzzer command
+var contractFuzzerCommand = cli.Command{
+	Action:    research.TransitionSubstate,
+	Name:      "contract-fuzzer",
+	Aliases:   []string{"cf"},
+	Usage:     "execute address and messages given from ContractFuzzer and send output to port 8888",
+	ArgsUsage: "<address> <messagesPath> <blockTxsPath>",
+	Flags:     []cli.Flag{},
+	Description: `
+The contract-fuzzer (cf) command requires three arguments:
+<address> <callDataPath> <blockTxsPath>
+<address> is the account address to test.
+<callDataPath> is a path of a file that contains a list of call data (ABI + arguments).
+<blockTxsPath> is a path of a file that contains a list of block_tx keys to test.`,
+}
+
 func init() {
 	app.Flags = []cli.Flag{}
 	app.Commands = []cli.Command{
