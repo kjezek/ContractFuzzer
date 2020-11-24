@@ -180,6 +180,8 @@ func init() {
 	app.Commands = []cli.Command{
 		// stage1-substate: transition-substate (t8n-substate) command
 		stateTransitionSubstateCommand,
+		// stage1-substate-migration: contract-fuzzer (cf) command
+		contractFuzzerCommand,
 	}
 	cli.CommandHelpTemplate = flags.OriginCommandHelpTemplate
 }
