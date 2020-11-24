@@ -161,7 +161,7 @@ last block of the inclusive range of blocks to replay transactions.`,
 
 // stage1-substate-migration: contract-fuzzer command
 var contractFuzzerCommand = cli.Command{
-	Action:    research.TransitionSubstate,
+	Action:    research.ContractFuzzer,
 	Name:      "contract-fuzzer",
 	Aliases:   []string{"cf"},
 	Usage:     "execute address and messages given from ContractFuzzer and send output to port 8888",
