@@ -175,6 +175,20 @@ The contract-fuzzer (cf) command requires three arguments:
 <blockTxsPath> is a path of a file that contains a list of block_tx keys to test.`,
 }
 
+var addressToSubstateCommand = cli.Command{
+	Action:    research.AddressToSubstate,
+	Name:      "address-to-substate",
+	Aliases:   []string{"a2s"},
+	Usage:     "extract mapping from address to substate for ContractFuzzer",
+	ArgsUsage: "<blockNumFirst> <blockNumLast>",
+	Flags:     []cli.Flag{},
+	Description: `
+The address-to-substate (a2s) command requires two arguments:
+<blockNumFirst> <blockNumLast>
+<blockNumFirst> and <blockNumLast> are the first and
+last block of the inclusive range of blocks to extract.`,
+}
+
 func init() {
 	app.Flags = []cli.Flag{}
 	app.Commands = []cli.Command{
@@ -182,6 +196,8 @@ func init() {
 		stateTransitionSubstateCommand,
 		// stage1-substate-migration: contract-fuzzer (cf) command
 		contractFuzzerCommand,
+		// stage1-substate-migration: address-to-substate (a2s) command
+		addressToSubstateCommand,
 	}
 	cli.CommandHelpTemplate = flags.OriginCommandHelpTemplate
 }
