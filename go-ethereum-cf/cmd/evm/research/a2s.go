@@ -7,7 +7,6 @@ import (
 	"path"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -84,12 +83,8 @@ func AddressToSubstate(ctx *cli.Context) error {
 	outdir := "address-to-substate"
 	os.Mkdir(outdir, 0o755)
 
-	wg := &sync.WaitGroup{}
-
-	wg.Add(len(a2s))
 	for addr, blockTxs := range a2s {
-		go func(addrHex, blockTxsString string) {
-			defer wg.Done()
+		func(addrHex, blockTxsString string) {
 			f, err := os.Create(path.Join(outdir, addrHex))
 			if err != nil {
 				log.Fatal(err)
@@ -98,7 +93,6 @@ func AddressToSubstate(ctx *cli.Context) error {
 			f.WriteString(blockTxsString)
 		}(strings.ToLower(addr.Hex()), strings.Join(blockTxs, "\n")+"\n")
 	}
-	wg.Wait()
 
 	return nil
 }
