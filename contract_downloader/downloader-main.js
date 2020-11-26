@@ -9,8 +9,10 @@ const async = require('async');
 const Set = require("collections/set");
 
 const LAST_LINE_FILE = "last_line.txt"
+const CONTRACTS = new Set();
+const ADDR_MAP = new Set();
 
-let currentResults = 0;
+// Start processing from the last line, at the end of processing store the last line back in the file
 let currentLines = 0;
 let lastLine = 0;
 if (fs.existsSync(LAST_LINE_FILE)) lastLine = parseInt(fs.readFileSync(LAST_LINE_FILE));
@@ -135,12 +137,12 @@ function downloadContract(accountAddress, onData, onDone) {
 
             if (contrName !== undefined && abi !== "Contract source code not verified") {
                 onData(addr, contrName, abi, src)
-                currentResults++;
 
-                if (currentResults % 100 === 0) console.log("Processed items: " + currentResults)
+                if (CONTRACTS.size % 100 === 0) console.log("Processed unique contract names: " + CONTRACTS.size)
             }
 
-            if (currentResults > MAX_RESULTS) {
+            // !!! Contract fuzzer ignores situation when there is a contract with the same name under more addresses - so we store just the names as well
+            if (CONTRACTS.size > MAX_RESULTS) {
                 onDone("OK");  // ignore all results above -- send fake error not to continue
                 return
             }
@@ -171,9 +173,6 @@ fs.mkdirSync(outputDir + "/verified_contract_abis/", { recursive: true });
 
 // const CSV_FILE = "accounts_storage_11000000.csv"
 
-const CONTRACTS = new Set();
-const ADDR_MAP = new Set();
-
 const storeContractData = function (addr, name, abi, bytes) {
     // save abi into a file
     const abiStream = fs.createWriteStream(outputDir + "/verified_contract_abis/" + name + ".abi");
@@ -184,8 +183,8 @@ const storeContractData = function (addr, name, abi, bytes) {
     newLine.push(addr);
     newLine.push(name);
 
-    CONTRACTS.add(newLine.join(','));
-    ADDR_MAP.add(name);
+    ADDR_MAP.add(newLine.join(','));
+    CONTRACTS.add(name);
 }
 
 const writeResults = function () {
