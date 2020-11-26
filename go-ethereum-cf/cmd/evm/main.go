@@ -159,11 +159,45 @@ two arguments: <blockNumFirst> <blockNumLast>
 last block of the inclusive range of blocks to replay transactions.`,
 }
 
+// stage1-substate-migration: contract-fuzzer command
+var contractFuzzerCommand = cli.Command{
+	Action:    research.ContractFuzzer,
+	Name:      "contract-fuzzer",
+	Aliases:   []string{"cf"},
+	Usage:     "execute address and messages given from ContractFuzzer and send output to port 8888",
+	ArgsUsage: "<address> <messagesPath> <blockTxsPath>",
+	Flags:     []cli.Flag{},
+	Description: `
+The contract-fuzzer (cf) command requires three arguments:
+<address> <callDataPath> <blockTxsPath>
+<address> is the account address to test.
+<callDataPath> is a path of a file that contains a list of call data (ABI + arguments).
+<blockTxsPath> is a path of a file that contains a list of block_tx keys to test.`,
+}
+
+var addressToSubstateCommand = cli.Command{
+	Action:    research.AddressToSubstate,
+	Name:      "address-to-substate",
+	Aliases:   []string{"a2s"},
+	Usage:     "extract mapping from address to substate for ContractFuzzer",
+	ArgsUsage: "<blockNumFirst> <blockNumLast>",
+	Flags:     []cli.Flag{},
+	Description: `
+The address-to-substate (a2s) command requires two arguments:
+<blockNumFirst> <blockNumLast>
+<blockNumFirst> and <blockNumLast> are the first and
+last block of the inclusive range of blocks to extract.`,
+}
+
 func init() {
 	app.Flags = []cli.Flag{}
 	app.Commands = []cli.Command{
 		// stage1-substate: transition-substate (t8n-substate) command
 		stateTransitionSubstateCommand,
+		// stage1-substate-migration: contract-fuzzer (cf) command
+		contractFuzzerCommand,
+		// stage1-substate-migration: address-to-substate (a2s) command
+		addressToSubstateCommand,
 	}
 	cli.CommandHelpTemplate = flags.OriginCommandHelpTemplate
 }
