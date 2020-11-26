@@ -2,7 +2,6 @@ package research
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
 	"math/big"
 	"os"
@@ -33,9 +32,9 @@ func ApplyFuzzerMessage(address common.Address, callData []byte, block uint64, t
 	if inputMessage.To == nil || *inputMessage.To != address {
 		panic(fmt.Errorf("stage1-substate-transition: ApplyFuzzerMessage: %v_%v's inputMessage.To is not address %s", block, tx, address.Hex()))
 	}
-	if len(inputMessage.Data) < 4 || !bytes.Equal(inputMessage.Data[:4], callData[:4]) {
-		panic(fmt.Errorf("stage1-substate-transition: ApplyFuzzerMessage: %v_%v's ABI signature is not %s", block, tx, common.ToHex(callData[:4])))
-	}
+	// if len(inputMessage.Data) < 4 || !bytes.Equal(inputMessage.Data[:4], callData[:4]) {
+	// 	panic(fmt.Errorf("stage1-substate-transition: ApplyFuzzerMessage: %v_%v's ABI signature is not %s", block, tx, common.ToHex(callData[:4])))
+	// }
 
 	inputMessage.Data = callData
 
