@@ -142,7 +142,7 @@ function downloadContract(accountAddress, onData, onDone) {
             }
 
             // !!! Contract fuzzer ignores situation when there is a contract with the same name under more addresses - so we store just the names as well
-            if (CONTRACTS.size > MAX_RESULTS) {
+            if (CONTRACTS.size >= MAX_RESULTS) {
                 onDone("OK");  // ignore all results above -- send fake error not to continue
                 return
             }
