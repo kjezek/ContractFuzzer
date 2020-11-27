@@ -129,17 +129,10 @@ function downloadContract(accountAddress, onData, onDone) {
     }
 
     const onDoneSeries = function (err, results) {
-        currentLines++; // increase processed lines - does not matter if successful or not
         if (!err)  {
             const contrName = results[0].contactName
             const abi = results[0].abi
             const src = results[0].src
-
-            if (contrName !== undefined && abi !== "Contract source code not verified") {
-                onData(addr, contrName, abi, src)
-
-                if (CONTRACTS.size % 100 === 0) console.log("Processed unique contract names: " + CONTRACTS.size)
-            }
 
             // !!! Contract fuzzer ignores situation when there is a contract with the same name under more addresses - so we store just the names as well
             if (CONTRACTS.size >= MAX_RESULTS) {
@@ -147,9 +140,16 @@ function downloadContract(accountAddress, onData, onDone) {
                 return
             }
 
+            if (contrName !== undefined && abi !== "Contract source code not verified") {
+                onData(addr, contrName, abi, src)
+
+                if (CONTRACTS.size % 100 === 0) console.log("Processed unique contract names: " + CONTRACTS.size)
+            }
+
             // console.log("res" + results)
         }
 
+        currentLines++; // increase processed lines - does not matter if successful or not
         // never report error - we want to run all API requests, even if some of them fails
         onDone()
     }
