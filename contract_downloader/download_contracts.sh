@@ -18,6 +18,13 @@ for (( i = 0; i < ${ADDR_COUNT}; i += ${BATH_SIZE} )); do
     node downloader-main.js ${MAPPING_DIR} ${BATH_DIR} $BATH_SIZE
 
     COUNT_CHECK_ABIS=$(ls "${BATH_DIR}/verified_contract_abis" | wc -l)
-    COUNT_CHECK_CONTRACTS=$(ls "${BATH_DIR}/fuzzer/config/contracts.list" | wc -l)
+    COUNT_CHECK_CONTRACTS=$(cat "${BATH_DIR}/fuzzer/config/contracts.list" | wc -l)
     echo "Finished Bath ${i}/${ADDR_COUNT} - ABIs: ${COUNT_CHECK_ABIS}, Contracts.list: ${COUNT_CHECK_CONTRACTS}"
+
+    ## No more verified API found - END
+    if [ ${COUNT_CHECK_ABIS} -eq 0 ]; then
+        echo "DONE"
+        rm -rf ${BATH_DIR}
+        break
+    fi
 done
