@@ -6,6 +6,9 @@ BATH_SIZE=${3}
 
 ADDR_COUNT=$(ls ${MAPPING_DIR} | wc -l)
 
+rm -rf ${OUTPUT_DIR}
+rm last_line.txt
+
 for (( i = 0; i < ${ADDR_COUNT}; i += ${BATH_SIZE} )); do
     BATH_DIR="${OUTPUT_DIR}/$i"
     mkdir -p "${BATH_DIR}/fuzzer/config"
