@@ -136,14 +136,11 @@ function downloadContract(accountAddress, onData, onDone) {
 
             // !!! Contract fuzzer ignores situation when there is a contract with the same name under more addresses - so we store just the names as well
             if (CONTRACTS.size >= MAX_RESULTS) {
-                console.log("END: Contrcts size " + CONTRACTS.size)
                 onDone("OK");  // ignore all results above -- send fake error not to continue
                 return
             }
 
             if (contrName !== undefined && abi !== "Contract source code not verified") {
-                console.log("ONDATA: Contrcts size " + CONTRACTS.size)
-
                 onData(addr, contrName, abi, src)
 
                 if (CONTRACTS.size % 100 === 0) console.log("Processed unique contract names: " + CONTRACTS.size)

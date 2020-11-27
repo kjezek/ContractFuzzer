@@ -14,6 +14,7 @@ for (( i = 0; i < ${ADDR_COUNT}; i += ${BATH_SIZE} )); do
     cp -r ../examples/delegatecall_dangerous/fuzzer/config/*.json "${BATH_DIR}/fuzzer/config"
     node downloader-main.js ${MAPPING_DIR} ${BATH_DIR} $BATH_SIZE
 
-    COUNT_CHECK=$(ls "${BATH_DIR}/verified_contract_abis" | wc -l)
-    echo "Finished Bath ${i}/${ADDR_COUNT} - ABIs: ${COUNT_CHECK}"
+    COUNT_CHECK_ABIS=$(ls "${BATH_DIR}/verified_contract_abis" | wc -l)
+    COUNT_CHECK_CONTRACTS=$(ls "${BATH_DIR}/fuzzer/config/contracts.list" | wc -l)
+    echo "Finished Bath ${i}/${ADDR_COUNT} - ABIs: ${COUNT_CHECK_ABIS}, Contracts.list: ${COUNT_CHECK_CONTRACTS}"
 done
