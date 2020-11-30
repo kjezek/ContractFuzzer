@@ -9,6 +9,7 @@ ADDR_COUNT=$(ls ${MAPPING_DIR} | wc -l)
 rm -rf ${OUTPUT_DIR}
 rm last_line.txt
 
+echo "Started analysis of ${ADDR_COUNT} addresses, batch size ${BATH_SIZE}"
 for (( i = 0; i < ${ADDR_COUNT}; i += ${BATH_SIZE} )); do
     BATH_DIR="${OUTPUT_DIR}/$i"
     mkdir -p "${BATH_DIR}/fuzzer/config"

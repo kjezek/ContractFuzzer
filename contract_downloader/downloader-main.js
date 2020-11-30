@@ -64,6 +64,8 @@ function readAddressesFromDirs(file, cb, saveData, onDone) {
     let tasks = []
     let dirent;
 
+    console.log("DEBUG: START: From line: " + currentLines);
+
     while ((dirent = dir.readSync()) !== null) {
         if (currentLines >= lastLine) {
             const address = dirent.name;
@@ -73,6 +75,8 @@ function readAddressesFromDirs(file, cb, saveData, onDone) {
         } else currentLines++;  // skipping already processed lines
     }
     dir.closeSync()
+
+    console.log("DEBUG: TASKs submitted: " + tasks.length);
 
     // we may send 5 request/s -
     async.parallelLimit(tasks, 5, onDone);
@@ -105,6 +109,7 @@ function downloadContract(accountAddress, onData, onDone) {
 
     const taskSrc = function (done) {
         const srcUrl = "https://api.etherscan.io/api?module=contract&action=getsourcecode&address=" + addr + "&apikey=" + apiKey
+        console.log("DEBUG: API request: " + srcUrl);
         request(srcUrl, options, (error, res, body) => {
             if (!error && res.statusCode === 200 && body.status === "1") {
                 const contrName = body.result[0].ContractName
@@ -136,12 +141,14 @@ function downloadContract(accountAddress, onData, onDone) {
 
             // !!! Contract fuzzer ignores situation when there is a contract with the same name under more addresses - so we store just the names as well
             if (CONTRACTS.size >= MAX_RESULTS) {
+                console.log("DEBUG: Contract batch done: " + CONTRACTS.size);
                 onDone("OK");  // ignore all results above -- send fake error not to continue
                 return
             }
 
             if (contrName !== undefined && abi !== "Contract source code not verified") {
                 onData(addr, contrName, abi, src)
+                console.log("DEBUG: Contract DOES have a verified source code,  NEW #contracts: " + CONTRACTS.size);
 
                 if (CONTRACTS.size % 100 === 0) console.log("Processed unique contract names: " + CONTRACTS.size)
             }
@@ -196,6 +203,8 @@ const writeResults = function () {
 
     addrMapStream.end();
     contractListStream.end();
+
+    console.log("DEBUG: END: Last line: " + currentLines);
     fs.writeFileSync(LAST_LINE_FILE, (currentLines).toString());
 }
 
