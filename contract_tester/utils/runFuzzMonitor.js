@@ -38,9 +38,12 @@ if (!Array.prototype.shuffle) {
 function sendBatchTransaction(transactions) {
     const sendTransaction = Promise.promisify(web3.eth.sendTransaction);
     for (let transaction of transactions) {
-        sendTransaction(transaction).catch(function(err){
+        console.log("sendTransaction(to: " + transaction.to + ", value: " + transaction.value + ")")
+        sendTransaction(transaction).then(function(res) {
+            console.log("sendTransaction: res: " + res);
+        }).catch(function(err){
             //do nothing but output err msg
-            console.log(err);            
+            console.log("sendTransaction: err: " + err);
         });
     }
 }

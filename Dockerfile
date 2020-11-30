@@ -81,7 +81,6 @@ ADD Ethereum Ethereum
 
 ADD examples examples
 ADD contract_fuzzer contract_fuzzer
-ADD contract_tester contract_tester
 
 ADD fuzzer_run.sh fuzzer_run.sh
 ADD tester_run.sh tester_run.sh
@@ -95,5 +94,7 @@ ADD go-ethereum-cf go-ethereum
 RUN \
   (cd go-ethereum && make geth)                                && \
     cp go-ethereum/build/bin/geth /usr/local/bin/                
+
+ADD contract_tester contract_tester
 
 CMD ["sh"]     

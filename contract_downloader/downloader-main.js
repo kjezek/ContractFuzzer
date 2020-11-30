@@ -64,7 +64,7 @@ function readAddressesFromDirs(file, cb, saveData, onDone) {
     let tasks = []
     let dirent;
 
-    console.log("DEBUG: START: From line: " + currentLines);
+    console.log("DEBUG: START: From line: " + lastLine);
 
     while ((dirent = dir.readSync()) !== null) {
         if (currentLines >= lastLine) {
@@ -143,6 +143,7 @@ function downloadContract(accountAddress, onData, onDone) {
             if (CONTRACTS.size >= MAX_RESULTS) {
                 console.log("DEBUG: Contract batch done: " + CONTRACTS.size);
                 onDone("OK");  // ignore all results above -- send fake error not to continue
+                console.log("DEBUG: terminating: " + CONTRACTS.size);
                 return
             }
 
@@ -195,17 +196,19 @@ const storeContractData = function (addr, name, abi, bytes) {
 }
 
 const writeResults = function () {
+    console.log("DEBUG: END: Last line: " + currentLines);
+
     const addrMapStream = fs.createWriteStream(outputDir + "/fuzzer/config/addrmap.csv");
     const contractListStream = fs.createWriteStream(outputDir + "/fuzzer/config/contracts.list");
 
-    for (let contract of CONTRACTS) contractListStream.write(contract + '\n');
-    for (let addr of ADDR_MAP) addrMapStream.write(addr + '\n');
+    for (let contract of CONTRACTS) contractListStream.write(contract + '\n', () => contractListStream.end());
+    for (let addr of ADDR_MAP) addrMapStream.write(addr + '\n', () => addrMapStream.end());
 
-    addrMapStream.end();
-    contractListStream.end();
-
-    console.log("DEBUG: END: Last line: " + currentLines);
     fs.writeFileSync(LAST_LINE_FILE, (currentLines).toString());
+
+    console.log("DEBUG: all written " + currentLines);
+
+    process.exit(); // TODO - hard exit - it was sometimes freezing, not sure where/why
 }
 
 
