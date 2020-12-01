@@ -164,12 +164,14 @@ function parse_cmd() {
         let i=0;
         while(i<6){
            if (args[i].indexOf("--gethrpcport")==0){
-            let httpRpcAddr = args[i+1]; 
-            console.log(httpRpcAddr);
-            Provider = new Web3.providers.HttpProvider(httpRpcAddr);
-            web3 = new Web3(Provider);
-            web3.personal.unlockAccount(defaultAccount, "123456", 200 * 60 * 60);
-            web3.personal.unlockAccount(Account1, "123456", 200 * 60 * 60);
+
+               // KJ: RESEARCH - we do not call Geth at all
+            // let httpRpcAddr = args[i+1]; 
+            // console.log(httpRpcAddr);
+            // Provider = new Web3.providers.HttpProvider(httpRpcAddr);
+            // web3 = new Web3(Provider);
+            // web3.personal.unlockAccount(defaultAccount, "123456", 200 * 60 * 60);
+            // web3.personal.unlockAccount(Account1, "123456", 200 * 60 * 60);
             // console.log(web3);    
           }
           if (args[i].indexOf("--account")==0){
