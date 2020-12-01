@@ -37,7 +37,7 @@ if (!Array.prototype.shuffle) {
 }
 
 function sendBatchTransaction(transactions) {
-    const sendTransaction = Promise.promisify(web3.eth.sendTransaction);
+    // const sendTransaction = Promise.promisify(web3.eth.sendTransaction);
     for (let transaction of transactions) {
         // store message
         const MESSAGE_FILE = "message_" + Math.floor(Math.random() * 1000000) + ".txt"
@@ -166,7 +166,7 @@ function parse_cmd() {
            if (args[i].indexOf("--gethrpcport")==0){
 
                // KJ: RESEARCH - we do not call Geth at all
-            // let httpRpcAddr = args[i+1]; 
+            // let httpRpcAddr = args[i+1];
             // console.log(httpRpcAddr);
             // Provider = new Web3.providers.HttpProvider(httpRpcAddr);
             // web3 = new Web3(Provider);
