@@ -125,7 +125,8 @@ function go(address,msg_group){
             data:  msg_group[index]
         });
     }
-    MyCallWithValueBatch(argsAgent);
+    // KJ: RESEARCH - AttackerAgent not supported (TODO - can we support it somehow?)
+    // MyCallWithValueBatch(argsAgent);
     sendBatchTransaction(args);
 }
 
@@ -188,7 +189,8 @@ function parse_cmd() {
 }
 async function Running(){
     parse_cmd();
-    Agent = await getAgent();
+    // KJ: RESEARCH - AttackerAgent not supported (TODO - can we support it somehow?)
+    // Agent = await getAgent();
     Owner = getOwner();
     Normal = getNormal();
     RunnerMonitor();

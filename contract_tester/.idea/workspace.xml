@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="59758cb0-7566-4b00-8a4e-68c2e2390ab2" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/../contract_downloader/downloader-main.js" beforeDir="false" afterPath="$PROJECT_DIR$/../contract_downloader/downloader-main.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/runFuzzMonitor.js" beforeDir="false" afterPath="$PROJECT_DIR$/utils/runFuzzMonitor.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -88,7 +88,7 @@
       <updated>1504945241009</updated>
       <workItem from="1504945245701" duration="198000" />
       <workItem from="1504945457725" duration="7504000" />
-      <workItem from="1606445216562" duration="6862000" />
+      <workItem from="1606445216562" duration="8763000" />
     </task>
     <servers />
   </component>
@@ -112,10 +112,14 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="184" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1440.900@0.0.1440.900" timestamp="1606777983769" />
-    <state x="561" y="66" width="798" height="588" key="find.popup" timestamp="1606775966868">
+    <state x="561" y="66" width="798" height="588" key="find.popup" timestamp="1606795214963">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="561" y="66" width="798" height="588" key="find.popup/-960.0.960.704/0.0.1440.900@0.0.1440.900" timestamp="1606775966868" />
+    <state x="561" y="66" width="798" height="588" key="find.popup/-960.0.960.704/0.0.1440.900@0.0.1440.900" timestamp="1606795214963" />
     <state x="421" y="205" width="598" height="490" key="find.popup/0.0.1440.900@0.0.1440.900" timestamp="1606445426134" />
+    <state x="385" y="196" width="670" height="676" key="search.everywhere.popup" timestamp="1606792723449">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="385" y="196" width="670" height="676" key="search.everywhere.popup/-960.0.960.704/0.0.1440.900@0.0.1440.900" timestamp="1606792723449" />
   </component>
 </project>
