@@ -2,26 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="59758cb0-7566-4b00-8a4e-68c2e2390ab2" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/node_modules/child_process/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/node_modules/child_process/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/../Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../contract_downloader/downloader-main.js" beforeDir="false" afterPath="$PROJECT_DIR$/../contract_downloader/downloader-main.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/ether-pudding/node_modules/bignumber.js/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/ether-pudding/node_modules/bignumber.js/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/ethereumjs-testrpc/node_modules/ethereumjs-util/node_modules/.bin/rlp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/ethereumjs-testrpc/node_modules/web3/node_modules/bignumber.js/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/ethereumjs-testrpc/node_modules/web3/node_modules/bignumber.js/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/ethereumjs-vm/node_modules/ethereumjs-util/node_modules/.bin/rlp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/ethereumjs-wallet/node_modules/ethereumjs-util/node_modules/.bin/rlp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/level-iterator-stream/node_modules/level-errors/node_modules/.bin/errno" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/truffle-default-builder/node_modules/bignumber.js/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/truffle-default-builder/node_modules/bignumber.js/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/truffle-provider/node_modules/bignumber.js/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/truffle-provider/node_modules/bignumber.js/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/truffle/node_modules/bignumber.js/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/truffle/node_modules/bignumber.js/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/web3-provider-engine/node_modules/bignumber.js/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/web3-provider-engine/node_modules/bignumber.js/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/web3/node_modules/bignumber.js/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/web3/node_modules/bignumber.js/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/runFuzzMonitor.js" beforeDir="false" afterPath="$PROJECT_DIR$/utils/runFuzzMonitor.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../go-ethereum-cf/cmd/evm/research/a2s.go" beforeDir="false" afterPath="$PROJECT_DIR$/../go-ethereum-cf/cmd/evm/research/a2s.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -106,7 +88,7 @@
       <updated>1504945241009</updated>
       <workItem from="1504945245701" duration="198000" />
       <workItem from="1504945457725" duration="7504000" />
-      <workItem from="1606445216562" duration="6224000" />
+      <workItem from="1606445216562" duration="6862000" />
     </task>
     <servers />
   </component>

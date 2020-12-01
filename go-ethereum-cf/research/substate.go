@@ -18,7 +18,7 @@ import (
 	leveldb_opt "github.com/syndtr/goleveldb/leveldb/opt"
 )
 
-var substateDir = filepath.Join("stage1-substate")
+var substateDir = filepath.Join("/ContractFuzzer/stage1-substate")
 var substateDB, codeDB *leveldb.DB
 
 func OpenSubstateDB() {

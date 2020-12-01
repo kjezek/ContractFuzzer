@@ -201,14 +201,24 @@ const writeResults = function () {
     const addrMapStream = fs.createWriteStream(outputDir + "/fuzzer/config/addrmap.csv");
     const contractListStream = fs.createWriteStream(outputDir + "/fuzzer/config/contracts.list");
 
-    for (let contract of CONTRACTS) contractListStream.write(contract + '\n', () => contractListStream.end());
-    for (let addr of ADDR_MAP) addrMapStream.write(addr + '\n', () => addrMapStream.end());
+    let tasks1 = []
+    for (let contract of CONTRACTS) tasks1.push( done => {
+        console.log(contract);
+        contractListStream.write(contract + '\n', done)
+    });
+    let tasks2 = []
+    for (let addr of ADDR_MAP) tasks2.push( done => addrMapStream.write(addr + '\n', done));
+
+    // make sure to close files when all is written
+    async.series(tasks1, () => contractListStream.end())
+    async.series(tasks2, () => addrMapStream.end())
 
     fs.writeFileSync(LAST_LINE_FILE, (currentLines).toString());
 
     console.log("DEBUG: all written " + currentLines);
 
-    process.exit(); // TODO - hard exit - it was sometimes freezing, not sure where/why
+    // TODO - hard exit - it was sometimes freezing, not sure where/why
+    // setTimeout(() => process.exit(), 60 * 1000)
 }
 
 

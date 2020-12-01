@@ -20,8 +20,9 @@ CONTRACT_DIR=$(cd $2&&pwd)
 
 export CONTRACT_DIR
 echo "Testing contracts from " $CONTRACT_DIR
-nohup ./geth_run.sh>>$CONTRACT_DIR/fuzzer/reporter/geth_run.log 2>&1 &
-sleep 60
+# KJ: RESEARCH - we do not need GET at all
+#nohup ./geth_run.sh>>$CONTRACT_DIR/fuzzer/reporter/geth_run.log 2>&1 &
+#sleep 60
 cd $DIR
 nohup ./tester_run.sh>>$CONTRACT_DIR/fuzzer/reporter/tester_run.log 2>&1 &
 sleep 300
