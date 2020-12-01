@@ -81,7 +81,7 @@ func AddressToSubstate(ctx *cli.Context) error {
 	}
 
 	outdir := "address-to-substate"
-	os.Mkdir(outdir, 0o755)
+	os.Mkdir(outdir, 0755)
 
 	for addr, blockTxs := range a2s {
 		func(addrHex, blockTxsString string) {

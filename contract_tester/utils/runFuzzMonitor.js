@@ -13,6 +13,7 @@ import {
 } from "./ContractUtils.js";
 import { type } from "os";
 const truffle_Contract = require("truffle-contract");
+const exec = require('child_process').exec;
 
 const assert = require("assert");
 const Web3 = require("web3");
@@ -38,13 +39,23 @@ if (!Array.prototype.shuffle) {
 function sendBatchTransaction(transactions) {
     const sendTransaction = Promise.promisify(web3.eth.sendTransaction);
     for (let transaction of transactions) {
-        console.log("sendTransaction(to: " + transaction.to + ", value: " + transaction.value + ")")
-        sendTransaction(transaction).then(function(res) {
-            console.log("sendTransaction: res: " + res);
-        }).catch(function(err){
-            //do nothing but output err msg
-            console.log("sendTransaction: err: " + err);
+        // store message
+        const MESSAGE_FILE = "message_" + Math.floor(Math.random() * 1000000) + ".txt"
+        console.log("sendTransaction(to: " + transaction.to + ", value: " + transaction.value + "), communicated via: " + MESSAGE_FILE)
+        fs.writeFileSync(MESSAGE_FILE, transaction.value);
+        // Locate transaction block mapping: expect this dir is mounted in Docker or simlinked
+        const ADDR_MAPPING = "/addresses/" + transaction.to
+        exec("/ContractFuzzer/go-ethereum/build/bin/evm cf " + transaction.to + " " + MESSAGE_FILE + " " + ADDR_MAPPING, function callback(error, stdout, stderr){
+            console.log("stdout: " + stdout + " stderr: " + stderr + " error " + error)
         });
+
+        // KJ:RESEARCH - remove Web3 API Call and replaced with GETH substate call
+        // sendTransaction(transaction).then(function(res) {
+        //     console.log("sendTransaction: res: " + res);
+        // }).catch(function(err){
+        //     //do nothing but output err msg
+        //     console.log("sendTransaction: err: " + err);
+        // });
     }
 }
 function MyCallWithValueBatch(args){

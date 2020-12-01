@@ -92,7 +92,7 @@ RUN \
 
 ADD go-ethereum-cf go-ethereum
 RUN \
-  (cd go-ethereum && make geth)                                && \
+  (cd go-ethereum && make all)                                && \
     cp go-ethereum/build/bin/geth /usr/local/bin/                
 
 ADD contract_tester contract_tester
