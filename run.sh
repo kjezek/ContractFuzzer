@@ -25,7 +25,7 @@ echo "Testing contracts from " $CONTRACT_DIR
 #sleep 60
 cd $DIR
 nohup ./tester_run.sh>>$CONTRACT_DIR/fuzzer/reporter/tester_run.log 2>&1 &
-sleep 300
+sleep 10
 cd $DIR
 ./fuzzer_run.sh>>$CONTRACT_DIR/fuzzer/reporter/fuzzer_run.log 2>&1 
 echo "Test finished!"
