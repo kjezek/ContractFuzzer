@@ -97,4 +97,4 @@ RUN \
 
 ADD contract_tester contract_tester
 
-CMD ["sh"]     
+CMD  ./run.sh --contracts_dir /contracts/     
