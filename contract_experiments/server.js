@@ -14,11 +14,11 @@ function readTasks(inputDir) {
     let dirent;
 
     while ((dirent = dir.readSync()) !== null) {
-        tasks.push(dirent.name)
+        tasks.push(parseInt(dirent.name));
     }
 
     dir.closeSync();
-    return tasks;
+    return tasks.sort((a, b)=> a-b);
 }
 
 function server() {
@@ -34,7 +34,7 @@ function server() {
     app.get("/task", (req, res, next) => {
         const nextTask = index === tasks.length ? "DONE" : tasks[index++]
         console.log("Next task is " + nextTask + " Index: " + index + "/" + tasks.length)
-        res.send(nextTask);
+        res.send(nextTask.toString());
     });
 
 }
