@@ -1,7 +1,7 @@
 FROM golang:1.11.1-alpine3.7
 
 RUN \
-  apk add --update git make gcc musl-dev linux-headers  
+  apk add --update git make gcc musl-dev linux-headers curl 
  
 ENV NODE_VERSION 9.11.1
 # add nodejs part
@@ -95,6 +95,7 @@ ADD fuzzer_run.sh fuzzer_run.sh
 ADD tester_run.sh tester_run.sh
 ADD geth_run.sh  geth_run.sh
 ADD run.sh  run.sh
+ADD run_experiment.sh  run_experiment.sh
 ADD contract_tester contract_tester
 
 CMD  ./run.sh --contracts_dir /contracts/     

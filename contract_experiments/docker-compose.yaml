@@ -1,0 +1,36 @@
+version: '3.3'
+
+networks:
+  app-tier:
+    driver: bridge
+
+services:
+    master:
+        image: cf-experiment-master
+        ports:
+          - '9999:9999'
+        networks:
+            - app-tier
+        volumes:
+          - /opt/cf-experiments/contracts/:/contracts
+
+    cf:
+        image: contractfuzzer
+            networks:
+                - app-tier
+        volumes:
+            - /opt/cf-experiments/contracts/:/contracts
+            - /opt/cf-experiments/reporter/:/reporter/
+            - /opt/cf-experiments/address-to-substate/:/addresses
+            - /opt/cf-experiments/stage1-substate:/ContractFuzzer/stage1-substate/
+        environment:
+            ContractFuzzer: "/contractFuzzer/ContractFuzzer"
+            SERVER_HOST: "master"
+        command: 
+            - ./run_experiment.sh
+        deploy:
+            replicas: 1
+
+
+
+

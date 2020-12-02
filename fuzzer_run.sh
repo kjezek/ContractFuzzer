@@ -25,7 +25,7 @@ contract_fuzzer -abi_dir ${CONTRACT_DIR}/verified_contract_abis     \
   -byte_seeds    ${CONTRACT_DIR}/fuzzer/config/byte_seeds.json        \
   -bytes_seeds   ${CONTRACT_DIR}/fuzzer/config/bytes_seeds.json      \
   -contract_list ${CONTRACT_DIR}/fuzzer/config/contracts.list        \
-  -reporter      ${CONTRACT_DIR}/fuzzer/reporter                     \
+  -reporter      /reporter                     \
   -tester_port   http://localhost:8088/               \
   -listen_port   :8888                                
 

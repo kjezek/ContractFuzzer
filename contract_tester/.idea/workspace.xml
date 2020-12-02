@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="59758cb0-7566-4b00-8a4e-68c2e2390ab2" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/../contract_downloader/downloader-main.js" beforeDir="false" afterPath="$PROJECT_DIR$/../contract_downloader/downloader-main.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../contract_experiments/server.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/../Dockerfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -64,6 +65,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path" value="/usr/local/bin/node" />
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+    <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
   </component>
   <component name="RunManager">
     <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
@@ -108,15 +110,19 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="184" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1606777983769">
+    <state x="184" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1606882036910">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="184" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1440.900@0.0.1440.900" timestamp="1606777983769" />
-    <state x="561" y="66" width="798" height="588" key="find.popup" timestamp="1606795214963">
+    <state x="184" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1440.900@0.0.1440.900" timestamp="1606882036910" />
+    <state x="421" y="205" width="598" height="490" key="find.popup" timestamp="1606889532662">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="561" y="66" width="798" height="588" key="find.popup/-960.0.960.704/0.0.1440.900@0.0.1440.900" timestamp="1606795214963" />
-    <state x="421" y="205" width="598" height="490" key="find.popup/0.0.1440.900@0.0.1440.900" timestamp="1606445426134" />
+    <state x="421" y="205" width="598" height="490" key="find.popup/0.0.1440.900@0.0.1440.900" timestamp="1606889532662" />
+    <state x="319" y="135" key="new project wizard" timestamp="1606880350013">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="319" y="135" key="new project wizard/0.0.1440.900@0.0.1440.900" timestamp="1606880350013" />
     <state x="385" y="196" width="670" height="676" key="search.everywhere.popup" timestamp="1606792723449">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
