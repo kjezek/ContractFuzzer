@@ -1,13 +1,18 @@
 #!/bin/sh 
 DIR=${PWD}
-NEXT_TASK=$(curl $SERVER_HOST:9999/task)
+NEXT_TASK=$(curl -s $SERVER_HOST:9999/task)
 
-if [ NEXT_TASK -eq "DONE" ]; then
+if [ "$NEXT_TASK" = "DONE" ]; then
 
     echo "ALL is done - no more experiments to run"
     sleep 360
 
 else
+
+    if [ "$NEXT_TASK" = "" ]; then
+        echo "Master not up yet"
+        exit 0
+    fi
 
     CONTRACT_DIR="/contracts/$NEXT_TASK"
     mkdir -p "/reporter/$NEXT_TASK/"

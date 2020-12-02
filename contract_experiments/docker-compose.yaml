@@ -16,13 +16,13 @@ services:
 
     cf:
         image: contractfuzzer
-            networks:
-                - app-tier
+        networks:
+            - app-tier
         volumes:
             - /opt/cf-experiments/contracts/:/contracts
-            - /opt/cf-experiments/reporter/:/reporter/
             - /opt/cf-experiments/address-to-substate/:/addresses
             - /opt/cf-experiments/stage1-substate:/ContractFuzzer/stage1-substate/
+            - /opt/cf-experiments/reporter/:/reporter
         environment:
             ContractFuzzer: "/contractFuzzer/ContractFuzzer"
             SERVER_HOST: "master"
@@ -30,6 +30,7 @@ services:
             - ./run_experiment.sh
         deploy:
             replicas: 1
+        restart: always
 
 
 
