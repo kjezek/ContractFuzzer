@@ -109,14 +109,15 @@ function downloadContract(accountAddress, onData, onDone) {
 
     const taskSrc = function (done) {
         const srcUrl = "https://api.etherscan.io/api?module=contract&action=getsourcecode&address=" + addr + "&apikey=" + apiKey
-        console.log("DEBUG: API request: " + srcUrl);
+        const URL_ID = Math.floor(Math.random() * Math.floor(100000));
+        console.log("DEBUG: API URL_ID: " + URL_ID + ", request: " + srcUrl);
         request(srcUrl, options, (error, res, body) => {
             if (!error && res.statusCode === 200 && body.status === "1") {
                 const contrName = body.result[0].ContractName
                 const abi = body.result[0].ABI
                 const src = body.result[0].SourceCode
                 // const json = JSON.parse(body.result);
-                done(null, {contactName: contrName, abi: abi, src : src} );
+                done(null, {contactName: contrName, abi: abi, src : src, url_id: URL_ID} );
             } else {
                 if (error) {
                     console.log("Error: " + error);
@@ -138,6 +139,9 @@ function downloadContract(accountAddress, onData, onDone) {
             const contrName = results[0].contactName
             const abi = results[0].abi
             const src = results[0].src
+            const url_id = results[0].url_id;
+
+            console.log("DEBUG: URL done: " + url_id)
 
             // !!! Contract fuzzer ignores situation when there is a contract with the same name under more addresses - so we store just the names as well
             if (CONTRACTS.size >= MAX_RESULTS) {
@@ -202,23 +206,21 @@ const writeResults = function () {
     const contractListStream = fs.createWriteStream(outputDir + "/fuzzer/config/contracts.list");
 
     let tasks1 = []
-    for (let contract of CONTRACTS) tasks1.push( done => {
-        console.log(contract);
-        contractListStream.write(contract + '\n', done)
-    });
+    for (let contract of CONTRACTS) tasks1.push( done => contractListStream.write(contract + '\n', done));
     let tasks2 = []
     for (let addr of ADDR_MAP) tasks2.push( done => addrMapStream.write(addr + '\n', done));
 
     // make sure to close files when all is written
-    async.series(tasks1, () => contractListStream.end())
-    async.series(tasks2, () => addrMapStream.end())
+    const end1 = done => async.series(tasks1, () => contractListStream.end(done))
+    const end2 = done => async.series(tasks2, () => addrMapStream.end(done))
 
-    fs.writeFileSync(LAST_LINE_FILE, (currentLines).toString());
+    const end3 = done => fs.writeFile(LAST_LINE_FILE, (currentLines).toString(), done);
 
     console.log("DEBUG: all written " + currentLines);
 
     // TODO - hard exit - it was sometimes freezing, not sure where/why
-    // setTimeout(() => process.exit(), 60 * 1000)
+    // make sure to hard exit when all streams are finished
+    async.parallel([end1, end2, end3], ()=>process.exit())
 }
 
 
