@@ -180,17 +180,18 @@ func ContractFuzzer(ctx *cli.Context) error {
 	research.OpenSubstateDBReadOnly()
 	defer research.CloseSubstateDB()
 
-	for _, callData := range callDataList {
-		for _, blockTx := range blockTxs {
-			blockTxSplit := strings.Split(blockTx, "_")
-			block, err := strconv.ParseUint(blockTxSplit[0], 10, 64)
-			if err != nil {
-				return fmt.Errorf("failed to parse blockTx data: %s", blockTx)
-			}
-			tx, err := strconv.ParseInt(blockTxSplit[1], 10, 64)
-			if err != nil {
-				return fmt.Errorf("failed to parse blockTx data: %s", blockTx)
-			}
+	for _, blockTx := range blockTxs {
+		blockTxSplit := strings.Split(blockTx, "_")
+		block, err := strconv.ParseUint(blockTxSplit[0], 10, 64)
+		if err != nil {
+			return fmt.Errorf("failed to parse blockTx data: %s", blockTx)
+		}
+		tx, err := strconv.ParseInt(blockTxSplit[1], 10, 64)
+		if err != nil {
+			return fmt.Errorf("failed to parse blockTx data: %s", blockTx)
+		}
+
+		for _, callData := range callDataList {
 			ApplyFuzzerMessage(address, callData, block, int(tx))
 		}
 	}
