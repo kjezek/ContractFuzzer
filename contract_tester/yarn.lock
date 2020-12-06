@@ -208,7 +208,7 @@
   "resolved" "https://registry.npmjs.org/async-foreach/-/async-foreach-0.1.3.tgz"
   "version" "0.1.3"
 
-"async@1.5.2":
+"async@^1.5.2", "async@1.5.2":
   "integrity" "sha1-7GphrlZIDAw8skHJVhjiCJL5Zyo="
   "resolved" "https://registry.npmjs.org/async/-/async-1.5.2.tgz"
   "version" "1.5.2"

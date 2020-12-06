@@ -1,5 +1,7 @@
 #! /local/bin/bnode
 
+const async = require('async');
+
 import * as fs from "fs";
 import {
     ContractUtils,
@@ -38,6 +40,7 @@ if (!Array.prototype.shuffle) {
 
 function sendBatchTransaction(transactions) {
     // const sendTransaction = Promise.promisify(web3.eth.sendTransaction);
+    let tasks = []
     for (let transaction of transactions) {
         // store message
         const MESSAGE_FILE = "message_" + Math.floor(Math.random() * 1000000) + ".txt"
@@ -45,9 +48,14 @@ function sendBatchTransaction(transactions) {
         fs.writeFileSync(MESSAGE_FILE, transaction.value);
         // Locate transaction block mapping: expect this dir is mounted in Docker or simlinked
         const ADDR_MAPPING = "/addresses/" + transaction.to
-        exec("/ContractFuzzer/go-ethereum/build/bin/evm cf " + transaction.to + " " + MESSAGE_FILE + " " + ADDR_MAPPING, function callback(error, stdout, stderr){
-            console.log("stdout: " + stdout + " stderr: " + stderr + " error " + error)
+        const start = Date.now();
+        const fn = (done)=> exec("/ContractFuzzer/go-ethereum/build/bin/evm cf " + transaction.to + " " + MESSAGE_FILE + " " + ADDR_MAPPING, function callback(error, stdout, stderr){
+            const end = Date.now();
+            console.log("stdout: " + stdout + " stderr: " + stderr + " error " + error + " totalTime " + (end - start))
+            done();
         });
+
+        tasks.push(fn);
 
         // KJ:RESEARCH - remove Web3 API Call and replaced with GETH substate call
         // sendTransaction(transaction).then(function(res) {
@@ -56,6 +64,10 @@ function sendBatchTransaction(transactions) {
         //     //do nothing but output err msg
         //     console.log("sendTransaction: err: " + err);
         // });
+
+        const threads = process.env.THREADS;
+        console.log("Using number of threads: " + threads);
+        async.parallelLimit(tasks, threads, ()=> {});
     }
 }
 function MyCallWithValueBatch(args){

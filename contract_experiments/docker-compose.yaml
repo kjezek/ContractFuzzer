@@ -26,6 +26,7 @@ services:
         environment:
             ContractFuzzer: "/contractFuzzer/ContractFuzzer"
             SERVER_HOST: "master"
+            THREADS: 32
         command: 
             - ./run_experiment.sh
         deploy:
