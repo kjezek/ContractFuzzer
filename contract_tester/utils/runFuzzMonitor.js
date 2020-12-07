@@ -38,9 +38,13 @@ if (!Array.prototype.shuffle) {
     };
 }
 
+const threads = process.env.THREADS;
+
+let tasks = []
+let running = false;
+
 function sendBatchTransaction(transactions) {
     // const sendTransaction = Promise.promisify(web3.eth.sendTransaction);
-    let tasks = []
     for (let transaction of transactions) {
         // store message
         const MESSAGE_FILE = "message_" + Math.floor(Math.random() * 1000000) + ".txt"
@@ -64,11 +68,22 @@ function sendBatchTransaction(transactions) {
         //     //do nothing but output err msg
         //     console.log("sendTransaction: err: " + err);
         // });
-
-        const threads = process.env.THREADS;
-        console.log("Using number of threads: " + threads);
-        async.parallelLimit(tasks, threads, ()=> {});
     }
+
+    const processTasks = () => {
+        if (running || tasks.length == 0) return ;   // execute if not already running
+        running = true;
+        // process bunch of data
+        const copy = tasks;
+        tasks = []
+        console.log("Submitting " + tasks.length + " tasks, using number of threads: " + threads);
+        async.parallelLimit(tasks, copy, ()=> {
+            running = false
+            processTasks();
+        });
+    }
+
+    processTasks();
 }
 function MyCallWithValueBatch(args){
     for (let arg of args) {
