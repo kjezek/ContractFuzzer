@@ -65,7 +65,7 @@ function sendBatchTransaction(transactions) {
                 const resultServerUrl = SERVER_HOST + ":9999/results/" + CURRENT_TASK + "/" + (end-start);
                 const options = {json: true};
                 request(resultServerUrl, options, (error, res, body) => {
-                    console.log("Results sent to result server: " + resultServerUrl);
+                    console.log("Results sent to result server: " + resultServerUrl + " ERR: " + error + " body: " + body);
                 })
                 done();
             });
