@@ -26,15 +26,15 @@ else
     cd $DIR
     nohup ./tester_run.sh>>"/reporter/$NEXT_TASK/tester_run.log" 2>&1 &
     sleep 10
-    local start_time=$(node -e 'console.log(Date.now())') 
+    start_time=$(node -e 'console.log(Date.now())') 
     cd $DIR
     ./fuzzer_run.sh>>"/reporter/$NEXT_TASK/fuzzer_run.log" 2>&1 
-    local end_time=$(node -e 'console.log(Date.now())') 
+    end_time=$(node -e 'console.log(Date.now())') 
     echo "Test finished!"
     echo "v_v..."
     echo "Please go to /reporter/$NEXT_TASK/ to see the results."
 
-    local DIFF_TIME=$((end_time - start_time))
+    DIFF_TIME=$((end_time - start_time))
     # Send results back to the server
     curl -s "$SERVER_HOST:9999/dump/$DIFF_TIME"
 
