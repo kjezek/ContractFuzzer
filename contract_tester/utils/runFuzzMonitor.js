@@ -74,9 +74,9 @@ function sendBatchTransaction(transactions) {
         if (running || tasks.length == 0) return ;   // execute if not already running
         running = true;
         // process bunch of data
-        const copy = tasks;
+        const copy = tasks.slice();
         tasks = []
-        console.log("Submitting " + tasks.length + " tasks, using number of threads: " + threads);
+        console.log("Submitting " + copy.length + " tasks, using number of threads: " + threads);
         async.parallelLimit(tasks, copy, ()=> {
             running = false
             processTasks();
