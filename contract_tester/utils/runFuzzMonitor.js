@@ -79,7 +79,7 @@ function sendBatchTransaction(transactions) {
         const copy = tasks.slice();
         tasks = []
         console.log("Submitting " + copy.length + " tasks, using number of threads: " + threads);
-        async.parallelLimit(tasks, copy, ()=> {
+        async.parallelLimit(copy, threads, ()=> {
             running = false
             processTasks();
         });
