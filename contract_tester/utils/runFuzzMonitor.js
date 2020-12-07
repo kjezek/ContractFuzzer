@@ -46,18 +46,20 @@ let running = false;
 function sendBatchTransaction(transactions) {
     // const sendTransaction = Promise.promisify(web3.eth.sendTransaction);
     for (let transaction of transactions) {
-        // store message
-        const MESSAGE_FILE = "message_" + Math.floor(Math.random() * 1000000) + ".txt"
-        console.log("sendTransaction(to: " + transaction.to + ", value: " + transaction.value + "), communicated via: " + MESSAGE_FILE)
-        fs.writeFileSync(MESSAGE_FILE, transaction.value);
-        // Locate transaction block mapping: expect this dir is mounted in Docker or simlinked
-        const ADDR_MAPPING = "/addresses/" + transaction.to
-        const start = Date.now();
-        const fn = (done)=> exec("/ContractFuzzer/go-ethereum/build/bin/evm cf " + transaction.to + " " + MESSAGE_FILE + " " + ADDR_MAPPING, function callback(error, stdout, stderr){
-            const end = Date.now();
-            console.log("stdout: " + stdout + " stderr: " + stderr + " error " + error + " totalTime " + (end - start))
-            done();
-        });
+        const fn = (done) => {
+            // store message
+            const MESSAGE_FILE = "message_" + Math.floor(Math.random() * 1000000) + ".txt"
+            console.log("sendTransaction(to: " + transaction.to + ", value: " + transaction.value + "), communicated via: " + MESSAGE_FILE)
+            fs.writeFileSync(MESSAGE_FILE, transaction.value);
+            // Locate transaction block mapping: expect this dir is mounted in Docker or simlinked
+            const ADDR_MAPPING = "/addresses/" + transaction.to
+            const start = Date.now();
+            exec("/ContractFuzzer/go-ethereum/build/bin/evm cf " + transaction.to + " " + MESSAGE_FILE + " " + ADDR_MAPPING, function callback(error, stdout, stderr){
+                const end = Date.now();
+                console.log("stdout: " + stdout + " stderr: " + stderr + " error " + error + " totalTime " + (end - start))
+                done();
+            });
+        }
 
         tasks.push(fn);
 
