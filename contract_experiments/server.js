@@ -14,6 +14,7 @@ Statistics = class {
         this.task = task;
         this.time = 0;
         this.messages = 0;
+        this.totalTime = 0;
     }
 
     addValue(time) {
@@ -70,9 +71,18 @@ function server() {
         res.sendStatus(200);
     });
 
+    app.get("/finish/:task/:time", (req, res, next) => {
+        const task = req.params.task;
+        const time = parseInt(req.params.time);
+
+        let item = stat.get(task);
+        item.totalTime = time;
+
+        res.sendStatus(200);
+    });
+
     // dump results
-    app.get("/dump/:totalTime", (req, res, next) => {
-        const totalTime = req.params.totalTime
+    app.get("/dump", (req, res, next) => {
 
         // dump all data in a file
         const stream = fs.createWriteStream( "./results.csv");
@@ -81,7 +91,7 @@ function server() {
         for (let key of keys) tasks.push( done => {
             const value = stat.get(key);
             const avrg = value.time / value.messages
-            stream.write(key + "," + value.time + "," + value.messages + "," + avrg + "," + totalTime + '\n', done)
+            stream.write(key + "," + value.time + "," + value.messages + "," + avrg + "," + value.totalTime + '\n', done)
         });
         // make sure to close files when all is written
         async.series(tasks, () => stream.end())

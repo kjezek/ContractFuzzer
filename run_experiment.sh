@@ -36,6 +36,7 @@ else
 
     DIFF_TIME=$((end_time - start_time))
     # Send results back to the server
-    curl -s "$SERVER_HOST:9999/dump/$DIFF_TIME"
+    curl -s "$SERVER_HOST:9999/finish/$NEXT_TASK/$DIFF_TIME"
+    curl -s "$SERVER_HOST:9999/dump"
 
 fi
