@@ -17,6 +17,7 @@ else
     CONTRACT_DIR="/contracts/$NEXT_TASK"
     mkdir -p "/reporter/$NEXT_TASK/"
 
+    export CURRENT_TASK="${NEXT_TASK}"
     export CONTRACT_DIR
     echo "Testing contracts from " $CONTRACT_DIR
     # KJ: RESEARCH - we do not need GETH at all
@@ -32,5 +33,6 @@ else
     echo "Please go to /reporter/$NEXT_TASK/ to see the results."
 
     # Send results back to the server
+    curl -s $SERVER_HOST:9999/dump
 
 fi

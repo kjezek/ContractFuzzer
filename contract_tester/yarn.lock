@@ -3943,7 +3943,7 @@
   dependencies:
     "is-finite" "1.0.2"
 
-"request@2.85.0":
+"request@^2.85.0", "request@2.85.0":
   "integrity" "sha512-8H7Ehijd4js+s6wuVPLjwORxD4zeuyjYugprdOXlPSqaApmL/QOy+EB/beICHVCHkGMKNh5rvihb5ov+IDw4mg=="
   "resolved" "https://registry.npmjs.org/request/-/request-2.85.0.tgz"
   "version" "2.85.0"

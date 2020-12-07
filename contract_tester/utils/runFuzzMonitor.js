@@ -1,6 +1,8 @@
 #! /local/bin/bnode
 
 const async = require('async');
+const request = require('request');
+
 
 import * as fs from "fs";
 import {
@@ -39,6 +41,8 @@ if (!Array.prototype.shuffle) {
 }
 
 const threads = process.env.THREADS;
+const SERVER_HOST = process.env.SERVER_HOST;
+const CURRENT_TASK = process.env.CURRENT_TASK;
 
 let tasks = []
 let running = false;
@@ -57,6 +61,12 @@ function sendBatchTransaction(transactions) {
             exec("/ContractFuzzer/go-ethereum/build/bin/evm cf " + transaction.to + " " + MESSAGE_FILE + " " + ADDR_MAPPING, function callback(error, stdout, stderr){
                 const end = Date.now();
                 console.log("stdout: " + stdout + " stderr: " + stderr + " error " + error + " totalTime " + (end - start))
+
+                const resultServerUrl = SERVER_HOST + ":9999/results/" + CURRENT_TASK + "/" + (end-start);
+                const options = {json: true};
+                request(resultServerUrl, options, (error, res, body) => {
+                    console.log("Results sent to result server: " + resultServerUrl);
+                })
                 done();
             });
         }
