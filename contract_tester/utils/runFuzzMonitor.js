@@ -51,13 +51,14 @@ class MsgSpeed {
 
     constructor(totalMessages) {
         this.totalMessages = totalMessages;
+        this.currentMessages = totalMessages;
         this.startTime = Date.now();
     }
 
     finishMsg() {
-        this.totalMessages--;
+        this.currentMessages--;
 
-        if (this.totalMessages === 0) {
+        if (this.currentMessages === 0) {
             const endTime = Date.now();
             const diffTime = (endTime - this.startTime) / 1000;  // seconds
             console.log("PrevTime " + this.startTime + " endTime "  + endTime + " diffTime " + diffTime + " " + this.totalMessages + " speed " + (this.totalMessages / diffTime))
