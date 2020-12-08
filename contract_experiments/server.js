@@ -98,10 +98,7 @@ function server() {
         item.totalTime = time;
 
         finishedTasks++;
-        const currentTime = Date.now();
-        const diffTime = (currentTime - startTime) / 1000 / 60   // min
-        const speed = finishedTasks / diffTime
-        console.log("Speed to process tasks: " + speed + " tasks/min");
+
 
         res.sendStatus(200);
     });
@@ -122,6 +119,12 @@ function server() {
 
     // dump results
     app.get("/dump", (req, res, next) => {
+        
+        // dump througput at every dump
+        const currentTime = Date.now();
+        const diffTime = (currentTime - startTime) / 1000 / 60   // min
+        const speedTasks = finishedTasks / diffTime
+        finishedTasks = 0;
 
         // dump all data in a file
         const stream = fs.createWriteStream( "./results.csv");
@@ -131,7 +134,7 @@ function server() {
             const value = stat.get(key);
             const avrg = value.time / value.messages
             const speed = value.speed();
-            stream.write(key + "," + value.time + "," + value.messages + "," + avrg + "," + speed + "," + value.totalTime + '\n', done)
+            stream.write(key + "," + value.time + "," + value.messages + "," + avrg + "," + speed + "," + value.totalTime + "," + speedTasks + '\n', done)
         });
         // make sure to close files when all is written
         async.series(tasks, () => stream.end())

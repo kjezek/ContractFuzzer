@@ -55,7 +55,7 @@ class MsgSpeed {
             if (this.totalMessages > 0) {
                 const endTime = Date.now();
                 const diffTime = (endTime - this.startTime) / 1000;  // seconds
-                console.log("PrevTime " + this.startTime + " endTime " + endTime + " diffTime " + diffTime + " Msgs: " + this.totalMessages + " speed " + (this.totalMessages / diffTime))
+                console.log("PrevTime " + this.startTime + " endTime " + endTime + " diffTime " + diffTime + " Msgs: " + this.totalMessages + " speed " + (this.totalMessages / diffTime) + " msg/s")
 
                 const msgThrou = this.totalMessages / diffTime;  // throughput messages per second
                 const resultServerUrl = "http://" + SERVER_HOST + ":9999/msgSpeed/" + CURRENT_TASK + "/" + msgThrou;
