@@ -15,7 +15,7 @@ services:
           - /opt/cf-experiments/contracts/:/contracts
 
     cf:
-        image: contractfuzzer
+        image: contractfuzzer-original
         networks:
             - app-tier
         volumes:

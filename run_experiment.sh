@@ -20,9 +20,8 @@ else
     export CURRENT_TASK="${NEXT_TASK}"
     export CONTRACT_DIR
     echo "Testing contracts from " $CONTRACT_DIR
-    # KJ: RESEARCH - we do not need GETH at all
-    #nohup ./geth_run.sh>>$CONTRACT_DIR/fuzzer/reporter/geth_run.log 2>&1 &
-    #sleep 60
+    nohup ./geth_run.sh>>$CONTRACT_DIR/fuzzer/reporter/geth_run.log 2>&1 &
+    sleep 60
     cd $DIR
     nohup ./tester_run.sh>>"/reporter/$NEXT_TASK/tester_run.log" 2>&1 &
     sleep 10

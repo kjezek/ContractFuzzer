@@ -44,58 +44,53 @@ const threads = process.env.THREADS;
 const SERVER_HOST = process.env.SERVER_HOST;
 const CURRENT_TASK = process.env.CURRENT_TASK;
 
-let tasks = []
-let running = false;
+// await sleep trick
+// http://stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// We need to wait until any miner has included the transaction
+// in a block to get the address of the contract
+async function waitBlock(start, hash) {
+    while (true) {
+        let receipt = web3.eth.getTransactionReceipt(hash);
+        if (receipt && receipt.contractAddress) {
+            console.log("Your contract has been deployed" + receipt.contractAddress);
+
+            const end = Date.now();
+            const resultServerUrl = "http://" + SERVER_HOST + ":9999/results/" + CURRENT_TASK + "/" + (end-start);
+            const options = {json: true};
+            request(resultServerUrl, options, (error, res, body) => {
+                console.log("Results sent to result server: " + resultServerUrl + " ERR: " + error + " body: " + body);
+            })
+
+            break;
+        }
+        console.log("Waiting a mined block to include your contract... current receipt " + receipt);
+        await sleep(100);
+    }
+}
+
+
 
 function sendBatchTransaction(transactions) {
-    // const sendTransaction = Promise.promisify(web3.eth.sendTransaction);
+    const sendTransaction = Promise.promisify(web3.eth.sendTransaction);
     for (let transaction of transactions) {
-        const fn = (done) => {
-            // store message
-            const MESSAGE_FILE = "message_" + Math.floor(Math.random() * 1000000) + ".txt"
-            console.log("sendTransaction(to: " + transaction.to + ", value: " + transaction.value + "), communicated via: " + MESSAGE_FILE)
-            fs.writeFileSync(MESSAGE_FILE, transaction.value);
-            // Locate transaction block mapping: expect this dir is mounted in Docker or simlinked
-            const ADDR_MAPPING = "/addresses/" + transaction.to
-            const start = Date.now();
-            exec("/ContractFuzzer/go-ethereum/build/bin/evm cf " + transaction.to + " " + MESSAGE_FILE + " " + ADDR_MAPPING, function callback(error, stdout, stderr){
-                const end = Date.now();
-                console.log("stdout: " + stdout + " stderr: " + stderr + " error " + error + " totalTime " + (end - start))
 
-                const resultServerUrl = "http://" + SERVER_HOST + ":9999/results/" + CURRENT_TASK + "/" + (end-start);
-                const options = {json: true};
-                request(resultServerUrl, options, (error, res, body) => {
-                    console.log("Results sent to result server: " + resultServerUrl + " ERR: " + error + " body: " + body);
-                })
-                done();
-            });
-        }
+        const start = Date.now();
+        sendTransaction(transaction).then(function(res) {
 
-        tasks.push(fn);
+            console.log("sendTransaction: res: " + res);
+            waitBlock(start, res);
 
-        // KJ:RESEARCH - remove Web3 API Call and replaced with GETH substate call
-        // sendTransaction(transaction).then(function(res) {
-        //     console.log("sendTransaction: res: " + res);
-        // }).catch(function(err){
-        //     //do nothing but output err msg
-        //     console.log("sendTransaction: err: " + err);
-        // });
-    }
 
-    const processTasks = () => {
-        if (running || tasks.length == 0) return ;   // execute if not already running
-        running = true;
-        // process bunch of data
-        const copy = tasks.slice();
-        tasks = []
-        console.log("Submitting " + copy.length + " tasks, using number of threads: " + threads);
-        async.parallelLimit(copy, threads, ()=> {
-            running = false
-            processTasks();
+        }).catch(function(err){
+            //do nothing but output err msg
+            console.log("sendTransaction: err: " + err);
         });
     }
 
-    processTasks();
 }
 function MyCallWithValueBatch(args){
     for (let arg of args) {
@@ -164,8 +159,7 @@ function go(address,msg_group){
             data:  msg_group[index]
         });
     }
-    // KJ: RESEARCH - AttackerAgent not supported (TODO - can we support it somehow?)
-    // MyCallWithValueBatch(argsAgent);
+    MyCallWithValueBatch(argsAgent);
     sendBatchTransaction(args);
 }
 
@@ -204,14 +198,13 @@ function parse_cmd() {
         while(i<6){
            if (args[i].indexOf("--gethrpcport")==0){
 
-               // KJ: RESEARCH - we do not call Geth at all
-            // let httpRpcAddr = args[i+1];
-            // console.log(httpRpcAddr);
-            // Provider = new Web3.providers.HttpProvider(httpRpcAddr);
-            // web3 = new Web3(Provider);
-            // web3.personal.unlockAccount(defaultAccount, "123456", 200 * 60 * 60);
-            // web3.personal.unlockAccount(Account1, "123456", 200 * 60 * 60);
-            // console.log(web3);    
+            let httpRpcAddr = args[i+1];
+            console.log(httpRpcAddr);
+            Provider = new Web3.providers.HttpProvider(httpRpcAddr);
+            web3 = new Web3(Provider);
+            web3.personal.unlockAccount(defaultAccount, "123456", 200 * 60 * 60);
+            web3.personal.unlockAccount(Account1, "123456", 200 * 60 * 60);
+            console.log(web3);
           }
           if (args[i].indexOf("--account")==0){
             ACCOUNT = accounts[parseInt(args[i+1])]; 
@@ -230,8 +223,7 @@ function parse_cmd() {
 }
 async function Running(){
     parse_cmd();
-    // KJ: RESEARCH - AttackerAgent not supported (TODO - can we support it somehow?)
-    // Agent = await getAgent();
+    Agent = await getAgent();
     Owner = getOwner();
     Normal = getNormal();
     RunnerMonitor();
