@@ -47,7 +47,8 @@ const CURRENT_TASK = process.env.CURRENT_TASK;
 let tasks = []
 let running = false;
 
-MsgSpeed = class {
+class MsgSpeed {
+
     constructor(totalMessages) {
         this.totalMessages = totalMessages;
         this.startTime = Date.now();
@@ -66,7 +67,7 @@ MsgSpeed = class {
             const options = {json: true};
             request(resultServerUrl, options, (error, res, body) => {
                 console.log("Results sent to result server: " + resultServerUrl + " ERR: " + error + " body: " + body);
-            })
+            });
         }
     }
 }
