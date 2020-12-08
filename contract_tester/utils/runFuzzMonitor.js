@@ -74,7 +74,7 @@ class MsgSpeed {
 
 function sendBatchTransaction(transactions) {
     // const sendTransaction = Promise.promisify(web3.eth.sendTransaction);
-    const messageSpeed = new MsgSpeed(transactions.length());
+    const messageSpeed = new MsgSpeed(transactions.length);
     for (let transaction of transactions) {
         const fn = (done) => {
             // store message
