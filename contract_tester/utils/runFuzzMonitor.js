@@ -121,8 +121,10 @@ function sendBatchTransaction(transactions) {
             })
 
             timer();
-        })
+        }, 1000)
     }
+
+    timer();
 }
 function MyCallWithValueBatch(args){
     for (let arg of args) {
