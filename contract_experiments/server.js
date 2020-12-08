@@ -58,6 +58,8 @@ function server() {
 
     const tasks = readTasks(inputDir);
     const stat = new Map();
+    const startTime = Date.now();
+    let finishedTasks = 0;
 
     let index = 0;
 
@@ -72,7 +74,7 @@ function server() {
         res.send(nextTask.toString());
     });
 
-    // Add stats.
+    // Add total execution time to process one fuzzing message
     app.get("/results/:task/:time", (req, res, next) => {
         const task = req.params.task;
         const time = parseInt(req.params.time);
@@ -87,6 +89,7 @@ function server() {
         res.sendStatus(200);
     });
 
+    // Add total time to finish the whole task - i.e. a batch of 10 contracts
     app.get("/finish/:task/:time", (req, res, next) => {
         const task = req.params.task;
         const time = parseInt(req.params.time);
@@ -94,9 +97,16 @@ function server() {
         let item = stat.get(task);
         item.totalTime = time;
 
+        finishedTasks++;
+        const currentTime = Date.now();
+        const diffTime = (currentTime - startTime) / 1000 / 60   // min
+        const speed = finishedTasks / diffTime
+        console.log("Speed to process tasks: " + speed + " tasks/min");
+
         res.sendStatus(200);
     });
 
+    // Add recent message speed to process last batch of messages
     app.get("/msgSpeed/:task/:speed", (req, res, next) => {
         const task = req.params.task;
         const speed = parseFloat(req.params.speed);
@@ -107,7 +117,6 @@ function server() {
             stat.set(task, item);
         }
         item.addSpeed(speed);
-
         res.sendStatus(200);
     });
 
