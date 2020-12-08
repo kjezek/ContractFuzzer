@@ -99,7 +99,7 @@ function server() {
 
     app.get("/msgSpeed/:task/:speed", (req, res, next) => {
         const task = req.params.task;
-        const speed = parseInt(req.params.speed);
+        const speed = parseFloat(req.params.speed);
 
         let item = stat.get(task);
         if (item === undefined) {
