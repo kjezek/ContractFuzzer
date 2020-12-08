@@ -4967,6 +4967,11 @@
   "resolved" "https://registry.npmjs.org/wordwrap/-/wordwrap-0.0.2.tgz"
   "version" "0.0.2"
 
+"workerpool@^6.0.3":
+  "integrity" "sha512-meU8ZzO+ipcx/njxtKUcbu2K95085q5WYDo8fR6PMW3hCY4driteIsNsEowYV7dzOtvq0HotUKsReJkK8gKXgg=="
+  "resolved" "https://registry.npmjs.org/workerpool/-/workerpool-6.0.3.tgz"
+  "version" "6.0.3"
+
 "wrap-ansi@2.1.0":
   "integrity" "sha1-2Pw9KE3QV5T+hJc8rs3Rz4JP3YU="
   "resolved" "https://registry.npmjs.org/wrap-ansi/-/wrap-ansi-2.1.0.tgz"
