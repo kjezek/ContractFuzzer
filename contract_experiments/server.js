@@ -15,11 +15,27 @@ Statistics = class {
         this.time = 0;
         this.messages = 0;
         this.totalTime = 0;
+        this.speeds = []
     }
 
     addValue(time) {
         this.time += time;
         this.messages++;
+    }
+
+    addSpeed(speed) {
+        this.speeds.push(speed);
+    }
+
+    speed() {
+        let i = 0;
+        let sum = 0;
+        this.speeds.forEach((s)=>{
+            sum += s;
+            i++;
+        })
+
+        return sum / i;
     }
 }
 
@@ -81,6 +97,20 @@ function server() {
         res.sendStatus(200);
     });
 
+    app.get("/msgSpeed/:task/:speed", (req, res, next) => {
+        const task = req.params.task;
+        const speed = parseInt(req.params.speed);
+
+        let item = stat.get(task);
+        if (item === undefined) {
+            item = new Statistics(task);
+            stat.set(task, item);
+        }
+        item.addSpeed(speed);
+
+        res.sendStatus(200);
+    });
+
     // dump results
     app.get("/dump", (req, res, next) => {
 
@@ -91,7 +121,8 @@ function server() {
         for (let key of keys) tasks.push( done => {
             const value = stat.get(key);
             const avrg = value.time / value.messages
-            stream.write(key + "," + value.time + "," + value.messages + "," + avrg + "," + value.totalTime + '\n', done)
+            const speed = value.speed();
+            stream.write(key + "," + value.time + "," + value.messages + "," + avrg + "," + speed + "," + value.totalTime + '\n', done)
         });
         // make sure to close files when all is written
         async.series(tasks, () => stream.end())

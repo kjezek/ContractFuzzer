@@ -46,6 +46,8 @@ const CURRENT_TASK = process.env.CURRENT_TASK;
 
 let tasks = []
 let running = false;
+let totalMessages = 0;
+let prevTime = Date.now();
 
 function sendBatchTransaction(transactions) {
     // const sendTransaction = Promise.promisify(web3.eth.sendTransaction);
@@ -67,6 +69,7 @@ function sendBatchTransaction(transactions) {
                 request(resultServerUrl, options, (error, res, body) => {
                     console.log("Results sent to result server: " + resultServerUrl + " ERR: " + error + " body: " + body);
                 })
+                totalMessages++;
                 done();
             });
         }
@@ -96,6 +99,30 @@ function sendBatchTransaction(transactions) {
     }
 
     processTasks();
+
+    const speed = function () {
+        const endTime = Date.now();
+        const diffTime = (endTime - prevTime) / 1000;  // seconds
+        prevTime = endTime;
+        const msgThrou = totalMessages / diffTime;  // throughput messages per second
+        totalMessages = 0;
+
+        return msgThrou;
+    }
+
+    const timer = function () {
+        setTimeout(()=> {
+            const s = speed();
+
+            const resultServerUrl = "http://" + SERVER_HOST + ":9999/msgSpeed/" + CURRENT_TASK + "/" + s;
+            const options = {json: true};
+            request(resultServerUrl, options, (error, res, body) => {
+                console.log("Results sent to result server: " + resultServerUrl + " ERR: " + error + " body: " + body);
+            })
+
+            timer();
+        })
+    }
 }
 function MyCallWithValueBatch(args){
     for (let arg of args) {
