@@ -103,6 +103,7 @@ function sendBatchTransaction(transactions) {
     const speed = function () {
         const endTime = Date.now();
         const diffTime = (endTime - prevTime) / 1000;  // seconds
+        console.log("PrevTime " + prevTime + " endTime "  + endTime + " diffTime " + diffTime + " " + totalMessages + " speed " + (otalMessages / diffTime))
         prevTime = endTime;
         const msgThrou = totalMessages / diffTime;  // throughput messages per second
         totalMessages = 0;
@@ -121,7 +122,7 @@ function sendBatchTransaction(transactions) {
             })
 
             timer();
-        }, 1000)
+        }, 30 * 1000)
     }
 
     timer();
