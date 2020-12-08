@@ -65,8 +65,8 @@ class MsgSpeed {
                 });
                 this.totalMessages = 0;
                 this.startTime = endTime;
-                speedWatch();
             }
+            speedWatch();
         }, 5*1000)
 
         speedWatch();
