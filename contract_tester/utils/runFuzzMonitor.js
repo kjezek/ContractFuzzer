@@ -2,8 +2,6 @@
 
 const async = require('async');
 const request = require('request');
-const workerpool = require('workerpool');
-
 
 import * as fs from "fs";
 import {
@@ -46,8 +44,6 @@ const SERVER_HOST = process.env.SERVER_HOST;
 const CURRENT_TASK = process.env.CURRENT_TASK;
 
 console.log("Number of threads " + threads);
-const pool = workerpool.pool({maxWorkers: threads});
-
 
 class MsgSpeed {
 
@@ -55,20 +51,25 @@ class MsgSpeed {
         this.totalMessages = 0;
         this.startTime = Date.now();
 
-        setTimeout(()=>{
-            const endTime = Date.now();
-            const diffTime = (endTime - this.startTime) / 1000;  // seconds
-            console.log("PrevTime " + this.startTime + " endTime " + endTime + " diffTime " + diffTime + " Msgs: " + this.totalMessages + " speed " + (this.totalMessages / diffTime))
+        const speedWatch = () => setTimeout(()=>{
+            if (this.totalMessages > 0) {
+                const endTime = Date.now();
+                const diffTime = (endTime - this.startTime) / 1000;  // seconds
+                console.log("PrevTime " + this.startTime + " endTime " + endTime + " diffTime " + diffTime + " Msgs: " + this.totalMessages + " speed " + (this.totalMessages / diffTime))
 
-            const msgThrou = this.totalMessages / diffTime;  // throughput messages per second
-            const resultServerUrl = "http://" + SERVER_HOST + ":9999/msgSpeed/" + CURRENT_TASK + "/" + msgThrou;
-            const options = {json: true};
-            request(resultServerUrl, options, (error, res, body) => {
-                console.log("Results sent to result server: " + resultServerUrl + " ERR: " + error + " body: " + body);
-            });
-            this.totalMessages = 0;
-            this.startTime = endTime;
-        }, 30*1000)
+                const msgThrou = this.totalMessages / diffTime;  // throughput messages per second
+                const resultServerUrl = "http://" + SERVER_HOST + ":9999/msgSpeed/" + CURRENT_TASK + "/" + msgThrou;
+                const options = {json: true};
+                request(resultServerUrl, options, (error, res, body) => {
+                    console.log("Results sent to result server: " + resultServerUrl + " ERR: " + error + " body: " + body);
+                });
+                this.totalMessages = 0;
+                this.startTime = endTime;
+                speedWatch();
+            }
+        }, 5*1000)
+
+        speedWatch();
     }
 
     finishMsg() {
@@ -78,10 +79,14 @@ class MsgSpeed {
 
 const messageSpeed = new MsgSpeed();
 
+const q = async.queue(function(task, cb) {
+    task(cb);
+}, threads);
+
 function sendBatchTransaction(transactions) {
     // const sendTransaction = Promise.promisify(web3.eth.sendTransaction);
     for (let transaction of transactions) {
-        const fn = function() {
+        const fn = function(done) {
             // store message
             const MESSAGE_FILE = "message_" + Math.floor(Math.random() * 1000000) + ".txt"
             console.log("sendTransaction(to: " + transaction.to + ", value: " + transaction.value + "), communicated via: " + MESSAGE_FILE)
@@ -101,8 +106,10 @@ function sendBatchTransaction(transactions) {
                 messageSpeed.finishMsg();
             });
 
-            pool.exec(fn)
+            done();
         }
+
+        q.push(fn);
 
         // KJ:RESEARCH - remove Web3 API Call and replaced with GETH substate call
         // sendTransaction(transaction).then(function(res) {
