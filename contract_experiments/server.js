@@ -61,6 +61,26 @@ function server() {
     const startTime = Date.now();
     let finishedTasks = 0;
 
+    const speedStream = fs.createWriteStream( "./speed.csv");
+    const speedWath = function () {
+        // dump througput at every dump
+        if (finishedTasks > 0) {
+            const currentTime = Date.now();
+            const diffTime = (currentTime - startTime) / 1000 / 60   // min
+            const speedTasks = finishedTasks / diffTime
+            finishedTasks = 0;
+            speedStream.write(speedTasks);
+        }
+    }
+    const speedWatchTimer = function () {
+        setTimeout(()=> {
+            speedWath();
+            speedWatchTimer();
+        }, 60 * 1000)
+    }
+
+    speedWatchTimer();
+
     let index = 0;
 
     app.listen(9999, () => {
@@ -119,12 +139,6 @@ function server() {
 
     // dump results
     app.get("/dump", (req, res, next) => {
-        
-        // dump througput at every dump
-        const currentTime = Date.now();
-        const diffTime = (currentTime - startTime) / 1000 / 60   // min
-        const speedTasks = finishedTasks / diffTime
-        finishedTasks = 0;
 
         // dump all data in a file
         const stream = fs.createWriteStream( "./results.csv");
@@ -134,7 +148,7 @@ function server() {
             const value = stat.get(key);
             const avrg = value.time / value.messages
             const speed = value.speed();
-            stream.write(key + "," + value.time + "," + value.messages + "," + avrg + "," + speed + "," + value.totalTime + "," + speedTasks + '\n', done)
+            stream.write(key + "," + value.time + "," + value.messages + "," + avrg + "," + speed + "," + value.totalTime + '\n', done)
         });
         // make sure to close files when all is written
         async.series(tasks, () => stream.end())
