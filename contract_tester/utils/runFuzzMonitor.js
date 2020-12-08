@@ -41,10 +41,11 @@ if (!Array.prototype.shuffle) {
     };
 }
 
-const threads = process.env.THREADS;
+const threads = parseInt(process.env.THREADS);
 const SERVER_HOST = process.env.SERVER_HOST;
 const CURRENT_TASK = process.env.CURRENT_TASK;
 
+console.log("Number of threads " + threads);
 const pool = workerpool.pool({maxWorkers: threads});
 
 
