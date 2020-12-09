@@ -61,7 +61,6 @@ function server() {
     let startTime = Date.now();
     let finishedTasks = 0;
 
-    const speedStream = fs.createWriteStream( "./speed.csv");
     const speedWath = function () {
         // dump througput at every dump
         if (finishedTasks > 0) {
@@ -70,7 +69,7 @@ function server() {
             const speedTasks = finishedTasks / diffTime
             finishedTasks = 0;
             startTime = currentTime;
-            speedStream.write(speedTasks+ '\n');
+            fs.appendFileSync("./speed.csv", speedTasks+ '\n');
         }
     }
     const speedWatchTimer = function () {
