@@ -75,7 +75,7 @@ function server() {
             const speedTasks = finishedTasks / diffTime
             finishedTasks = 0;
             startTime = currentTime;
-            const file = "./speed_" + rnd + ".csv"
+            const file = "./out/speed_" + rnd + ".csv"
             fs.appendFileSync(file, speedTasks+ '\n');
         }
     }
@@ -89,7 +89,7 @@ function server() {
     speedWatchTimer();
 
     const options = { 'flag': 'a+' }
-    const lastTaskIndex = fs.readFileSync("./lastTask.csv", options);
+    const lastTaskIndex = fs.readFileSync("./out/lastTask.csv", options);
     let index = 0;
     // find last index
     if (lastTaskIndex.length > 0)
@@ -155,7 +155,7 @@ function server() {
     app.get("/dump", (req, res, next) => {
 
         // dump all data in a file
-        const file = "./results_" + rnd + ".csv"
+        const file = "./out/results_" + rnd + ".csv"
         const stream = fs.createWriteStream( file);
         let tasks = []
         const keys = [...stat.keys()].sort((a, b) => a -b);
@@ -169,7 +169,7 @@ function server() {
         // make sure to close files when all is written
         async.series(tasks, () => stream.end())
         const opt2 = { 'flag': 'w' }
-        fs.writeFileSync("./lastTask.csv", lastKey +  '\n', opt2);
+        fs.writeFileSync("./out/lastTask.csv", lastKey +  '\n', opt2);
         res.sendStatus(200)
     });
 

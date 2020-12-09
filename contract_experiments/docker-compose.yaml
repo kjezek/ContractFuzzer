@@ -13,6 +13,7 @@ services:
             - app-tier
         volumes:
           - /opt/cf-experiments/contracts/:/contracts
+          - cf:/out/
 
     cf:
         image: contractfuzzer
@@ -32,6 +33,8 @@ services:
         deploy:
             replicas: 1
         restart: always
+volumes:
+    cf:
 
 
 
