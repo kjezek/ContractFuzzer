@@ -58,7 +58,7 @@ function server() {
 
     const tasks = readTasks(inputDir);
     const stat = new Map();
-    const startTime = Date.now();
+    let startTime = Date.now();
     let finishedTasks = 0;
 
     const speedStream = fs.createWriteStream( "./speed.csv");
@@ -69,7 +69,8 @@ function server() {
             const diffTime = (currentTime - startTime) / 1000 / 60   // min
             const speedTasks = finishedTasks / diffTime
             finishedTasks = 0;
-            speedStream.write(speedTasks);
+            startTime = currentTime;
+            speedStream.write(speedTasks+ '\n');
         }
     }
     const speedWatchTimer = function () {
