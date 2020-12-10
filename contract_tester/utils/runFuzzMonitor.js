@@ -3,7 +3,6 @@
 const async = require('async');
 const request = require('request');
 
-
 import * as fs from "fs";
 import {
     ContractUtils,
@@ -40,7 +39,7 @@ if (!Array.prototype.shuffle) {
     };
 }
 
-const threads = process.env.THREADS;
+const threads = parseInt(process.env.THREADS);
 const SERVER_HOST = process.env.SERVER_HOST;
 const CURRENT_TASK = process.env.CURRENT_TASK;
 
@@ -49,6 +48,42 @@ const CURRENT_TASK = process.env.CURRENT_TASK;
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+console.log("Number of threads " + threads);
+
+class MsgSpeed {
+
+    constructor() {
+        this.totalMessages = 0;
+        this.startTime = Date.now();
+
+        const speedWatch = () => setTimeout(()=>{
+            if (this.totalMessages > 0) {
+                const endTime = Date.now();
+                const diffTime = (endTime - this.startTime) / 1000;  // seconds
+                console.log("PrevTime " + this.startTime + " endTime " + endTime + " diffTime " + diffTime + " Msgs: " + this.totalMessages + " speed " + (this.totalMessages / diffTime) + " msg/s")
+
+                const msgThrou = this.totalMessages / diffTime;  // throughput messages per second
+                const resultServerUrl = "http://" + SERVER_HOST + ":9999/msgSpeed/" + CURRENT_TASK + "/" + msgThrou;
+                const options = {json: true};
+                request(resultServerUrl, options, (error, res, body) => {
+                    console.log("Results sent to result server: " + resultServerUrl + " ERR: " + error + " body: " + body);
+                });
+                this.totalMessages = 0;
+                this.startTime = endTime;
+            }
+            speedWatch();
+        }, 5*1000)
+
+        speedWatch();
+    }
+
+    finishMsg() {
+        this.totalMessages++;
+    }
+}
+
+const messageSpeed = new MsgSpeed();
+
 
 // We need to wait until any miner has included the transaction
 // in a block to get the address of the contract
@@ -64,15 +99,13 @@ async function waitBlock(start, hash) {
             request(resultServerUrl, options, (error, res, body) => {
                 console.log("Results sent to result server: " + resultServerUrl + " ERR: " + error + " body: " + body);
             })
-
+            messageSpeed.finishMsg();
             break;
         }
         console.log("Waiting a mined block to include your contract... current receipt " + receipt);
         await sleep(100);
     }
 }
-
-
 
 function sendBatchTransaction(transactions) {
     const sendTransaction = Promise.promisify(web3.eth.sendTransaction);
