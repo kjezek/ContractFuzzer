@@ -104,9 +104,9 @@ function sendBatchTransaction(transactions) {
                     console.log("Results sent to result server: " + resultServerUrl + " ERR: " + error + " body: " + body);
                 })
                 messageSpeed.finishMsg();
+                done();
             });
 
-            done();
         }
 
         q.push(fn);
