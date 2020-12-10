@@ -83,6 +83,28 @@ class MsgSpeed {
 const messageSpeed = new MsgSpeed();
 
 
+// We need to wait until any miner has included the transaction
+// in a block to get the address of the contract
+async function waitBlock(start, hash) {
+    while (true) {
+        let receipt = web3.eth.getTransactionReceipt(hash);
+        if (receipt) {
+            console.log("Message called, status: " + receipt.status + " Logs: " + receipt.logs);
+
+            const end = Date.now();
+            const resultServerUrl = "http://" + SERVER_HOST + ":9999/results/" + CURRENT_TASK + "/" + (end-start);
+            const options = {json: true};
+            request(resultServerUrl, options, (error, res, body) => {
+                console.log("Results sent to result server: " + resultServerUrl + " ERR: " + error + " body: " + body);
+            })
+            messageSpeed.finishMsg();
+            break;
+        }
+        // console.log("Waiting a mined block to include your contract... current receipt " + receipt);
+        await sleep(100);
+    }
+}
+
 function sendBatchTransaction(transactions) {
     const sendTransaction = Promise.promisify(web3.eth.sendTransaction);
     for (let transaction of transactions) {
@@ -91,22 +113,23 @@ function sendBatchTransaction(transactions) {
         sendTransaction(transaction).then(function(res) {
 
             console.log("sendTransaction: res: " + res);
-            web3.eth.getTransactionReceipt(res, (err, receipt)=>{
-                if (err) {
-                    console.log("Error to send msg: ", err);
-                }
-                if (receipt) {
-                    console.log("Message called, status: " + receipt.status + " Logs: " + receipt.logs);
-
-                    const end = Date.now();
-                    const resultServerUrl = "http://" + SERVER_HOST + ":9999/results/" + CURRENT_TASK + "/" + (end-start);
-                    const options = {json: true};
-                    request(resultServerUrl, options, (error, res, body) => {
-                        console.log("Results sent to result server: " + resultServerUrl + " ERR: " + error + " body: " + body);
-                    })
-                    messageSpeed.finishMsg();
-                }
-            });
+            // web3.eth.getTransactionReceipt(res, (err, receipt)=>{
+            //     if (err) {
+            //         console.log("Error to send msg: ", err);
+            //     }
+            //     if (receipt) {
+            //         console.log("Message called, status: " + receipt.status + " Logs: " + receipt.logs);
+            //
+            //         const end = Date.now();
+            //         const resultServerUrl = "http://" + SERVER_HOST + ":9999/results/" + CURRENT_TASK + "/" + (end-start);
+            //         const options = {json: true};
+            //         request(resultServerUrl, options, (error, res, body) => {
+            //             console.log("Results sent to result server: " + resultServerUrl + " ERR: " + error + " body: " + body);
+            //         })
+            //         messageSpeed.finishMsg();
+            //     }
+            // });
+            waitBlock(start, res);
 
         }).catch(function(err){
             //do nothing but output err msg
