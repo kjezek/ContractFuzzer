@@ -39,7 +39,6 @@ if (!Array.prototype.shuffle) {
     };
 }
 
-const threads = parseInt(process.env.THREADS);
 const SERVER_HOST = process.env.SERVER_HOST;
 const CURRENT_TASK = process.env.CURRENT_TASK;
 
@@ -48,7 +47,6 @@ const CURRENT_TASK = process.env.CURRENT_TASK;
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-console.log("Number of threads " + threads);
 
 class MsgSpeed {
 
@@ -90,8 +88,8 @@ const messageSpeed = new MsgSpeed();
 async function waitBlock(start, hash) {
     while (true) {
         let receipt = web3.eth.getTransactionReceipt(hash);
-        if (receipt && receipt.contractAddress) {
-            console.log("Your contract has been deployed" + receipt.contractAddress);
+        if (receipt) {
+            console.log("Message called, status: " + receipt.status);
 
             const end = Date.now();
             const resultServerUrl = "http://" + SERVER_HOST + ":9999/results/" + CURRENT_TASK + "/" + (end-start);
@@ -102,7 +100,7 @@ async function waitBlock(start, hash) {
             messageSpeed.finishMsg();
             break;
         }
-        console.log("Waiting a mined block to include your contract... current receipt " + receipt);
+        // console.log("Waiting a mined block to include your contract... current receipt " + receipt);
         await sleep(100);
     }
 }
@@ -237,7 +235,7 @@ function parse_cmd() {
             web3 = new Web3(Provider);
             web3.personal.unlockAccount(defaultAccount, "123456", 200 * 60 * 60);
             web3.personal.unlockAccount(Account1, "123456", 200 * 60 * 60);
-            console.log(web3);
+            // console.log(web3);
           }
           if (args[i].indexOf("--account")==0){
             ACCOUNT = accounts[parseInt(args[i+1])]; 
