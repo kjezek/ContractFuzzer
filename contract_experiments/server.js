@@ -132,7 +132,7 @@ function server() {
         let item = stat.get(task);
         item.totalTime = time;
 
-        finishedTasks++;
+        finishedTasks += parseInt(task);
 
         res.sendStatus(200);
     });
