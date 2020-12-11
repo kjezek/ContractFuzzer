@@ -73,6 +73,7 @@ function server() {
             const currentTime = Date.now();
             const diffTime = (currentTime - startTime) / 1000 / 60   // min
             const speedTasks = finishedTasks / diffTime
+            console.log("Speed:  diffTime: " + diffTime + ", finishedTasks: " + finishedTasks + ", speed: " + speedTasks)
             finishedTasks = 0;
             startTime = currentTime;
             const file = "./out/speed_" + rnd + ".csv"
@@ -133,6 +134,7 @@ function server() {
         item.totalTime = time;
 
         finishedTasks += parseInt(task);
+        console.log("Task done " + task + " Finished task to date: " + finishedTasks + ", time for this task: " + time)
 
         res.sendStatus(200);
     });
