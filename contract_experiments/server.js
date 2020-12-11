@@ -107,7 +107,7 @@ function server() {
     // Return next available task
     app.get("/task", (req, res, next) => {
         // const nextTask = index === tasks.length ? "DONE" : tasks[index++]
-        const nextTask = index === tasks.length || index === 30 ? "DONE" : tasks[index++]       // TODO execute only first 30
+        const nextTask = index === tasks.length ? "DONE" : tasks[index++]       // TODO execute only first 30
         console.log("Next task is " + nextTask + " Index: " + index + "/" + tasks.length)
         res.send(nextTask.toString());
     });
