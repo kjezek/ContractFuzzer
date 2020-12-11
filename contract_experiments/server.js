@@ -56,11 +56,12 @@ function readTasks(inputDir) {
 
 function server() {
 
-    const rnd = new Date().toISOString()
-        .replace(/:/, '-')
-        .replace(/:/, '-')
-        .replace(/T/, '_')
-        .replace(/\..+/, '')
+    const rnd = "_x"        // TODO starting from beginning now
+        // new Date().toISOString()
+        // .replace(/:/, '-')
+        // .replace(/:/, '-')
+        // .replace(/T/, '_')
+        // .replace(/\..+/, '')
     //Math.floor(Math.random() * 1000000);
     const tasks = readTasks(inputDir);
     const stat = new Map();
@@ -92,12 +93,12 @@ function server() {
     const options = { 'flag': 'a+' }
     const lastTaskIndex = fs.readFileSync("./out/lastTask.csv", options);
     let index = 0;
-    // find last index
-    if (lastTaskIndex.length > 0)
-        for (let i = 0; i < tasks.length; i++) {
-            index++;
-            if (tasks[i] === parseInt(lastTaskIndex)) break;
-        }
+    // find last index      // TODO - start from beginning now
+    // if (lastTaskIndex.length > 0)
+    //     for (let i = 0; i < tasks.length; i++) {
+    //         index++;
+    //         if (tasks[i] === parseInt(lastTaskIndex)) break;
+    //     }
 
     app.listen(9999, () => {
         console.log("Server running on port 9999");
@@ -105,7 +106,8 @@ function server() {
 
     // Return next available task
     app.get("/task", (req, res, next) => {
-        const nextTask = index === tasks.length ? "DONE" : tasks[index++]
+        // const nextTask = index === tasks.length ? "DONE" : tasks[index++]
+        const nextTask = index === tasks.length || index === 30 ? "DONE" : tasks[index++]       // TODO execute only first 30
         console.log("Next task is " + nextTask + " Index: " + index + "/" + tasks.length)
         res.send(nextTask.toString());
     });
@@ -133,7 +135,7 @@ function server() {
         let item = stat.get(task);
         item.totalTime = time;
 
-        finishedTasks += parseInt(task);
+        finishedTasks += 10;
         console.log("Task done " + task + " Finished task to date: " + finishedTasks + ", time for this task: " + time)
 
         res.sendStatus(200);
